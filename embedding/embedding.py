@@ -1,13 +1,21 @@
+import io
 import pickle
-from gensim.models import FastText
 
-ft_model = FastText.load('cc.tr.300.bin')
 
-vocab = list(ft_model.wv.vocab)
+def load_vectors(fname):
+    fin = io.open(fname, 'r', encoding='utf-8', newline='\n', errors='ignore')
+    # n, d = map(int, fin.readline().split())
+    data = {}
+    for line in fin:
+        tokens = line.rstrip().split(' ')
+        data[tokens[0]] = map(float, tokens[1:])
 
-word_to_vec_dict = {word: ft_model[word] for word in vocab}
+    embed_path = open('embed.pkl', 'wb')
+    pickle.dump(data, embed_path)
+    return data
 
-with open('word2vec_dictionary.pickle', 'wb') as f:
-    pickle.dump(word_to_vec_dict, f, protocol=pickle.HIGHEST_PROTOCOL)
 
-print(word_to_vec_dict["word"])
+# load_vectors(fname='cc.tr.300.bin')
+file = open('embed.pkl', 'rb')
+a = pickle.load(file)
+print(a['bir'])
