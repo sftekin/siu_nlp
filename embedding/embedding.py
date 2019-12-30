@@ -10,7 +10,7 @@ def load_vectors(fname):
         tokens = line.rstrip().split(' ')
         data[tokens[0]] = map(float, tokens[1:])
 
-    embed_path = open('embed.pkl', 'rb')
+    embed_path = open('embed.pkl', 'wb')
     pickle.dump(embed_path, data)
     return data
 
