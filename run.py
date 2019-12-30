@@ -27,9 +27,19 @@ def main():
     X, y = read_sup_dataset(tweet6k_path)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
+    word2vec = MeanEmbedding(embed_path)
+    clf = SVC(kernel='rbf')
+
+    c_values = [0.001, 0.01, 0.1, 1, 10, 100]
+    gamma_values = [2 ** -4, 2 ** -3, 2 ** -1, 2 ** -2, 1, 2]
+
+    params = {
+        'C': [0.001, 0.01, 0.1, 1, 10, 100],
+    }
+
     sentiment_analysis = Pipeline([
-        ('word2vec', MeanEmbedding(embed_path)),
-        ('SVM', SVC(kernel='linear'))
+        ('word2vec', word2vec),
+        ('SVM', clf)
     ])
 
     sentiment_analysis.fit(X_train, y_train)
