@@ -11,12 +11,13 @@ def read_sup_dataset(path):
             for line in f.readlines():
                 data.append(line)
         data_dict[label] = data
-    return data
+    return data_dict
 
 
 def main():
-    tweet6k_path = 'dataset/twitter_6k/'
+    tweet6k_path = 'dataset/twitter_6K/'
     data = read_sup_dataset(tweet6k_path)
+    print()
 
 
 if __name__ == '__main__':
