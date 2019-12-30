@@ -11,7 +11,7 @@ def load_vectors(fname):
         data[tokens[0]] = map(float, tokens[1:])
 
     embed_path = open('embed.pkl', 'wb')
-    pickle.dump(embed_path, data)
+    pickle.dump(data, embed_path)
     return data
 
 
