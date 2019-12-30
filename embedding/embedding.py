@@ -15,7 +15,7 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
         self.out_of_vocab_vector = out_of_vocab_vector
 
     def fit_transform(self, X, y=None, **kwargs):
-        res = []
+        res = np.zeros(self.vector_size)
         for x in X:
             if x in self.model.wv:
                 r = self.model.wv[x]
@@ -23,9 +23,8 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
                 r = self.model.wv[x.lower()]
             else:
                 r = self.out_of_vocab_vector
-            res.append(r)
-
-        return res
+            res += r
+        return res / len(X)
 
 
 if __name__ == '__main__':
