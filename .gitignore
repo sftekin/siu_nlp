@@ -1,7 +1,7 @@
 .idea
 .coverage
 
-dataset/*
+dataset/twitter_6K/*
 !dataset/twitter_6K/.gitkeep
 
 embedding/*
