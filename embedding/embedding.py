@@ -5,7 +5,6 @@ from sklearn.base import BaseEstimator, TransformerMixin
 
 class MeanEmbedding(BaseEstimator, TransformerMixin):
     def __init__(self, model_path):
-        super(MeanEmbedding, self).__init__()
         self.model_path = model_path
         self.model = KeyedVectors.load_word2vec_format(self.model_path, binary=False, unicode_errors='replace')
         self.vector_size = self.model.vector_size
@@ -15,7 +14,10 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
 
         self.out_of_vocab_vector = out_of_vocab_vector
 
-    def fit_transform(self, X, y=None, **kwargs):
+    def fit(self, X, y):
+        return self
+
+    def transform(self, X):
         res = np.zeros(self.vector_size)
         for x in X:
             if x in self.model.wv:
