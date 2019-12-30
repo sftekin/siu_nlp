@@ -3,8 +3,9 @@ import numpy as np
 from sklearn import preprocessing
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
+from sklearn.model_selection import GridSearchCV
 from embedding.embedding import MeanEmbedding
+from sklearn.pipeline import Pipeline
 
 
 def read_sup_dataset(path):
@@ -30,19 +31,20 @@ def main():
     word2vec = MeanEmbedding(embed_path)
     clf = SVC(kernel='rbf')
 
-    c_values = [0.001, 0.01, 0.1, 1, 10, 100]
-    gamma_values = [2 ** -4, 2 ** -3, 2 ** -1, 2 ** -2, 1, 2]
-
     params = {
-        'C': [0.001, 0.01, 0.1, 1, 10, 100],
+        'clf__C': [0.001, 0.01, 0.1, 1, 10, 100],
+        'clf__gamma': [2 ** -4, 2 ** -3, 2 ** -1, 2 ** -2, 1, 2]
     }
 
-    sentiment_analysis = Pipeline([
+    pipe = Pipeline([
         ('word2vec', word2vec),
-        ('SVM', clf)
+        ('clf', clf)
     ])
 
-    sentiment_analysis.fit(X_train, y_train)
+    search = GridSearchCV(pipe, params, scoring='accuracy', n_jobs=-1)
+    search.fit(X_train, y_train)
+    print("Best parameter (CV score=%0.3f):" % search.best_score_)
+
 
 if __name__ == '__main__':
     main()
