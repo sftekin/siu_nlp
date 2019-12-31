@@ -3,9 +3,10 @@ import os
 from itertools import product
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
-from embedding import MeanEmbedding
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import cross_val_score
+from embedding import MeanEmbedding
+from preprocessing import Preprocess
 
 
 def read_sup_dataset(path):
@@ -25,10 +26,13 @@ def read_sup_dataset(path):
 def main():
     tweet6k_path = 'dataset/twitter_6K/'
     X, y = read_sup_dataset(tweet6k_path)
+
+    pre_pro = Preprocess()
+    X, y = pre_pro.transform(X, y)
+
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
     word2vec = MeanEmbedding()
-
     c_list = [2, 5, 10]
     g_list = [0.01, 0.5, 1, 2, 5]
     cv = 3
