@@ -32,8 +32,8 @@ def main():
     clf = SVC(kernel='rbf')
 
     params = {
-        'clf__C': [0.001, 0.01, 0.1, 1, 10, 100],
-        'clf__gamma': [2 ** -4, 2 ** -3, 2 ** -1, 2 ** -2, 1, 2]
+        'clf__C': [0.001, 0.01, 1, ],
+        'clf__gamma': [2 ** -4, 2 ** -1, 1]
     }
 
     pipe = Pipeline([
@@ -41,8 +41,8 @@ def main():
         ('clf', clf)
     ])
 
-    search = GridSearchCV(pipe, params, scoring='accuracy', n_jobs=-1, verbose=1)
-    search.fit(X_train, y_train)
+    search = GridSearchCV(pipe, params, scoring='accuracy', n_jobs=-1, verbose=3)
+    search.fit(X_train[:10], y_train[:10])
     print("Best parameter (CV score=%0.3f):" % search.best_score_)
 
 
