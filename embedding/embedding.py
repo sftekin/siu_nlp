@@ -6,7 +6,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class MeanEmbedding(BaseEstimator, TransformerMixin):
-    def __init__(self, path):
+    def __init__(self, path=''):
         self.model_path = os.path.join(path, 'word2vec.pkl')
         self.vector_path = os.path.join(path, 'word2vec.vec')
 
@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     tokens = 'bir kac kisi geldi sadece'.split()
 
-    word2vec = MeanEmbedding('word2vec.vec')
+    word2vec = MeanEmbedding()
 
     vectors = word2vec.fit_transform(tokens)
     print(vectors)
