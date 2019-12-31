@@ -32,7 +32,7 @@ def main():
     clf = SVC(kernel='rbf')
 
     params = {
-        'word2vec__model': model,
+        'word2vec__model': [model],
         'clf__C': [0.001, 0.01, 1],
         'clf__gamma': [2 ** -4, 2 ** -1, 1]
     }
