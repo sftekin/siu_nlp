@@ -48,7 +48,7 @@ def main():
         ])
 
         # pipe.fit(X_train, y_train)
-        cv_score = cross_val_score(pipe, X_train, y_train, cv=cv, scoring='f1')
+        cv_score = cross_val_score(pipe, X_train, y_train, cv=cv, scoring='f1_micro')
         print('C:{}, gamma:{}, cv_score:{}'.format(c, gamma, cv_score))
         cv_score = sum(cv_score) / cv
         if best_score < cv_score:
