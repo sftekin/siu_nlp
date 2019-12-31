@@ -1,10 +1,11 @@
 import os
-import numpy as np
+
+from itertools import product
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import GridSearchCV
-from embedding.embedding import MeanEmbedding, load_vector
+from embedding.embedding import MeanEmbedding
 from sklearn.pipeline import Pipeline
+from sklearn.model_selection import cross_val_score
 
 
 def read_sup_dataset(path):
@@ -26,24 +27,36 @@ def main():
     X, y = read_sup_dataset(tweet6k_path)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
-    model = load_vector()
-
     word2vec = MeanEmbedding()
-    clf = SVC(kernel='rbf')
 
-    params = {
-        'word2vec__model': [model],
-        'clf__C': [0.001, 0.01, 1],
-        'clf__gamma': [2 ** -4, 2 ** -1, 1]
-    }
+    c_list = [0.1, 1, 2]
+    g_list = [2 ** -4, 2 ** -1, 1]
 
+    best_score = 0
+    best_params = []
+    for c, gamma in product(c_list, g_list):
+        clf = SVC(kernel='rbf', C=c, gamma=gamma)
+
+        pipe = Pipeline([
+            ('word2vec', word2vec),
+            ('clf', clf)
+        ])
+
+        # pipe.fit(X_train, y_train)
+        cv_score = cross_val_score(pipe, X_train, y_train, cv=3, scoring='accuracy')
+        print('C:{}, gamma:{}, cv_score:{}'.format(c, gamma, cv_score))
+
+        if best_score < cv_score:
+            best_params = [c, gamma]
+
+    print('Training finished best params = C:{}, gamma:{}'.format(*best_params))
+
+    clf = SVC(kernel='rbf', C=best_params[0], gamma=best_params[1])
     pipe = Pipeline([
         ('word2vec', word2vec),
         ('clf', clf)
     ])
-
-    search = GridSearchCV(pipe, params, scoring='accuracy', n_jobs=-1, verbose=3)
-    search.fit(X_train, y_train)
+    pipe.fit(X_train, y_train)
     print("Best parameter (CV score=%0.3f):" % pipe.score(X_test, y_test))
 
 
