@@ -27,11 +27,10 @@ def main():
     X, y = read_sup_dataset(tweet6k_path)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
-    word2vec = MeanEmbedding(path=embed_path)
+    word2vec = MeanEmbedding()
     clf = SVC(kernel='rbf')
 
     params = {
-        'word2vec__base_estimator__path': [embed_path],
         'clf__C': [0.001, 0.01, 1],
         'clf__gamma': [2 ** -4, 2 ** -1, 1]
     }
