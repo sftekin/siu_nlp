@@ -42,6 +42,8 @@ def main():
     model6k = train_model(data, **params)
     confidences = model6k.decision_function(X_test)
     print(confidences)
+    print(y_test)
+    # np.argmax(model6k.decision_function(X_test), axis=1)
 
 
 if __name__ == '__main__':
