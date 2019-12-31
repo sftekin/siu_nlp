@@ -1,13 +1,8 @@
 import os
 
-from itertools import product
 from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.model_selection import cross_val_score
-from sklearn.svm import LinearSVC
-from sklearn.svm import SVC
-from embedding import MeanEmbedding
 from preprocessing import Preprocess
+from train import train_model
 
 
 def read_sup_dataset(path):
@@ -31,42 +26,19 @@ def main():
     pre_pro = Preprocess()
     X, y = pre_pro.transform(X, y)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y)
+    data = train_test_split(X, y, test_size=0.2, stratify=y)
 
-    word2vec = MeanEmbedding()
-    c_list = [0.1, 2, 5, 10]
-    tol = [1e-4, 1e-5]
-    cv = 3
+    params = {
+        'c_list': [0.1, 2, 5, 10],
+        'tol': [1e-4, 1e-5],
+        'cv': 3,
+        'scoring': 'f1_micro',
+        'model_name': 'linear_svm',
+        'load': True
+    }
 
-    best_score = 0
-    best_params = []
-    for c, tol in product(c_list, tol):
-        clf = LinearSVC(C=c, multi_class='ovr',
-                        max_iter=2000, dual=False,
-                        tol=tol)
+    model6k = train_model(data, **params)
 
-        pipe = Pipeline([
-            ('word2vec', word2vec),
-            ('clf', clf)
-        ])
-
-        # pipe.fit(X_train, y_train)
-        cv_score = cross_val_score(pipe, X_train, y_train, cv=cv, scoring='f1_micro')
-        print('C:{}, tol:{}, cv_score:{}'.format(c, tol, cv_score))
-        cv_score = sum(cv_score) / cv
-        if best_score < cv_score:
-            best_score = cv_score
-            best_params = [c, tol]
-
-    print('Training finished best params = C:{}, gamma:{}'.format(*best_params))
-
-    clf = LinearSVC(C=best_params[0], tol=best_params[1], multi_class='ovr', max_iter=2000)
-    pipe = Pipeline([
-        ('word2vec', word2vec),
-        ('clf', clf)
-    ])
-    pipe.fit(X_train, y_train)
-    print("Best parameter Score (CV score=%0.3f):" % pipe.score(X_test, y_test))
 
 
 if __name__ == '__main__':
