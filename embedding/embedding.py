@@ -30,3 +30,10 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
         return res / len(X)
 
 
+if __name__ == '__main__':
+
+    word2vec = MeanEmbedding('word2vec.vec')
+    tokens = 'bir kac kisi geldi sadece'.split()
+
+    vectors = word2vec.fit_transform(tokens)
+    print(vectors)
