@@ -30,7 +30,7 @@ def main():
     pre_pro = Preprocess()
     X, y = pre_pro.transform(X, y)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y)
 
     word2vec = MeanEmbedding()
     c_list = [2, 5, 10]
@@ -48,7 +48,7 @@ def main():
         ])
 
         # pipe.fit(X_train, y_train)
-        cv_score = cross_val_score(pipe, X_train, y_train, cv=cv, scoring='accuracy')
+        cv_score = cross_val_score(pipe, X_train, y_train, cv=cv, scoring='f1')
         print('C:{}, gamma:{}, cv_score:{}'.format(c, gamma, cv_score))
         cv_score = sum(cv_score) / cv
         if best_score < cv_score:
