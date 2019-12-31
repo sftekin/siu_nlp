@@ -30,7 +30,7 @@ def main():
     word2vec = MeanEmbedding()
 
     c_list = [2, 5, 10]
-    g_list = [0.5, 1, 2, 4, 5]
+    g_list = [0.01, 0.5, 1, 2, 5]
     cv = 3
 
     best_score = 0
