@@ -11,10 +11,12 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
         self.vector_path = os.path.join(path, 'word2vec.vec')
 
         if os.path.isfile(self.model_path):
-            self.model = pickle.load(self.model_path)
+            model_file = open(self.model_path, 'rb')
+            self.model = pickle.load(model_file)
         else:
             self.model = KeyedVectors.load_word2vec_format(self.vector_path, binary=False, unicode_errors='replace')
-            pickle.dump(self.model, self.model_path)
+            model_file = open(self.model_path, 'wb')
+            pickle.dump(self.model, model_file)
 
         self.vector_size = self.model.vector_size
 
