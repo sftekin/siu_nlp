@@ -1,10 +1,11 @@
 import os
 
 from itertools import product
-from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import cross_val_score
+from sklearn.svm import LinearSVC
+from sklearn.svm import SVC
 from embedding import MeanEmbedding
 from preprocessing import Preprocess
 
@@ -33,14 +34,14 @@ def main():
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y)
 
     word2vec = MeanEmbedding()
-    c_list = [2, 5, 10]
-    g_list = [0.01, 0.5, 1, 2, 5]
+    c_list = [0.1, 2, 5, 10]
+    g_list = ['crammer_singer', 'ovr']
     cv = 3
 
     best_score = 0
     best_params = []
     for c, gamma in product(c_list, g_list):
-        clf = SVC(kernel='rbf', C=c, gamma=gamma)
+        clf = LinearSVC(C=c, multi_class=gamma, max_iter=2000)
 
         pipe = Pipeline([
             ('word2vec', word2vec),
