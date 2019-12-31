@@ -30,7 +30,7 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
 
     def transform(self, X):
         X = X[0]
-        res = np.zeros(self.vector_size)
+        res = np.zeros((self.vector_size, 1))
         for x in X:
             if x in self.model.wv:
                 r = self.model.wv[x]
