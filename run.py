@@ -29,8 +29,9 @@ def main():
 
     word2vec = MeanEmbedding()
 
-    c_list = [0.1, 1, 2]
-    g_list = [2 ** -4, 2 ** -1, 1]
+    c_list = [2, 5, 10]
+    g_list = [0.5, 1, 2, 4, 5]
+    cv = 3
 
     best_score = 0
     best_params = []
@@ -43,10 +44,11 @@ def main():
         ])
 
         # pipe.fit(X_train, y_train)
-        cv_score = cross_val_score(pipe, X_train, y_train, cv=3, scoring='accuracy')
+        cv_score = cross_val_score(pipe, X_train, y_train, cv=cv, scoring='accuracy')
         print('C:{}, gamma:{}, cv_score:{}'.format(c, gamma, cv_score))
 
-        if best_score < cv_score:
+        if best_score < sum(cv_score) / cv:
+            best_score = cv_score
             best_params = [c, gamma]
 
     print('Training finished best params = C:{}, gamma:{}'.format(*best_params))
@@ -57,7 +59,7 @@ def main():
         ('clf', clf)
     ])
     pipe.fit(X_train, y_train)
-    print("Best parameter (CV score=%0.3f):" % pipe.score(X_test, y_test))
+    print("Best parameter Score (CV score=%0.3f):" % pipe.score(X_test, y_test))
 
 
 if __name__ == '__main__':
