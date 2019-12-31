@@ -1,12 +1,21 @@
+import os
+import pickle
 import numpy as np
 from gensim.models import KeyedVectors
 from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class MeanEmbedding(BaseEstimator, TransformerMixin):
-    def __init__(self, model_path):
-        self.model_path = model_path
-        self.model = KeyedVectors.load_word2vec_format(self.model_path, binary=False, unicode_errors='replace')
+    def __init__(self, path):
+        self.model_path = os.path.join(path, 'word2vec.pkl')
+        self.vector_path = os.path.join(path, 'word2vec.vec')
+
+        if os.path.isfile(self.model_path):
+            self.model = pickle.load(self.model_path)
+        else:
+            self.model = KeyedVectors.load_word2vec_format(self.vector_path, binary=False, unicode_errors='replace')
+            pickle.dump(self.model, self.model_path)
+
         self.vector_size = self.model.vector_size
 
         out_of_vocab_vector = np.random.rand(1, self.vector_size)[0]
@@ -18,7 +27,6 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
-        X = X[0]
         res = np.zeros(self.vector_size)
         for x in X:
             if x in self.model.wv:
@@ -37,5 +45,5 @@ if __name__ == '__main__':
 
     word2vec = MeanEmbedding('word2vec.vec')
 
-    vectors = word2vec.fit_transform([tokens])
+    vectors = word2vec.fit_transform(tokens)
     print(vectors)
