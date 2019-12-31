@@ -29,7 +29,6 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
-        print(len(X))
         data = []
         for sen in X:
             data.append(self.vec2sen(sen))
