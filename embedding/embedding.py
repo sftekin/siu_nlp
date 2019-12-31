@@ -44,7 +44,7 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
             else:
                 r = self.out_of_vocab_vector
             res += r
-        return res / len(X)
+        return res
 
 
 if __name__ == '__main__':
