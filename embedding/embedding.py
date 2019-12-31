@@ -6,10 +6,9 @@ from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class MeanEmbedding(BaseEstimator, TransformerMixin):
-    def __init__(self, path=''):
-        print(path)
-        self.model_path = os.path.join(path, 'word2vec.pkl')
-        self.vector_path = os.path.join(path, 'word2vec.vec')
+    def __init__(self):
+        self.model_path = 'embedding/word2vec.pkl'
+        self.vector_path = 'embedding/word2vec.vec'
 
         if os.path.isfile(self.model_path):
             model_file = open(self.model_path, 'rb')
