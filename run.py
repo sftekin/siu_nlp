@@ -27,6 +27,8 @@ def main():
     X, y = pre_pro.transform(X, y)
 
     data = train_test_split(X, y, test_size=0.2, stratify=y)
+    X_train, X_test, y_train, y_test = data
+
 
     params = {
         'c_list': [0.1, 2, 5, 10],
@@ -38,7 +40,8 @@ def main():
     }
 
     model6k = train_model(data, **params)
-
+    confidences = model6k.decision_function(X_test)
+    print(confidences)
 
 
 if __name__ == '__main__':

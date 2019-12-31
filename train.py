@@ -39,7 +39,8 @@ def train_model(data, **params):
 
     print('Training finished best params = C:{}, gamma:{}'.format(*best_params))
 
-    clf = LinearSVC(C=best_params[0], tol=best_params[1], multi_class='ovr', max_iter=5000)
+    clf = LinearSVC(C=best_params[0], tol=best_params[1],
+                    multi_class='ovr', max_iter=5000, dual=False)
     pipe = Pipeline([
         ('word2vec', word2vec),
         ('clf', clf)
@@ -50,4 +51,5 @@ def train_model(data, **params):
     model_file = open(model_path, 'wb')
     pickle.dump(pipe, model_file)
     return pipe
+
 
