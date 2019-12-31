@@ -24,7 +24,7 @@ def read_sup_dataset(path):
 
 def main():
     tweet6k_path = 'dataset/twitter_6K/'
-    embed_path = 'embedding/word2vec.vec'
+    embed_path = 'embedding'
     X, y = read_sup_dataset(tweet6k_path)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
