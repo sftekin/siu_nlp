@@ -1,10 +1,9 @@
 import os
 import numpy as np
-from sklearn import preprocessing
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
-from embedding.embedding import MeanEmbedding
+from embedding.embedding import MeanEmbedding, load_vector
 from sklearn.pipeline import Pipeline
 
 
@@ -27,10 +26,13 @@ def main():
     X, y = read_sup_dataset(tweet6k_path)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
+    model = load_vector()
+
     word2vec = MeanEmbedding()
     clf = SVC(kernel='rbf')
 
     params = {
+        'word2vec__model': model,
         'clf__C': [0.001, 0.01, 1],
         'clf__gamma': [2 ** -4, 2 ** -1, 1]
     }
