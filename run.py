@@ -35,13 +35,15 @@ def main():
 
     word2vec = MeanEmbedding()
     c_list = [0.1, 2, 5, 10]
-    g_list = ['crammer_singer', 'ovr']
+    tol = [1e-4, 1e-5]
     cv = 3
 
     best_score = 0
     best_params = []
-    for c, gamma in product(c_list, g_list):
-        clf = LinearSVC(C=c, multi_class=gamma, max_iter=2000)
+    for c, tol in product(c_list, tol):
+        clf = LinearSVC(C=c, multi_class='ovr',
+                        max_iter=2000, dual=False,
+                        tol=tol)
 
         pipe = Pipeline([
             ('word2vec', word2vec),
@@ -50,15 +52,15 @@ def main():
 
         # pipe.fit(X_train, y_train)
         cv_score = cross_val_score(pipe, X_train, y_train, cv=cv, scoring='f1_micro')
-        print('C:{}, gamma:{}, cv_score:{}'.format(c, gamma, cv_score))
+        print('C:{}, tol:{}, cv_score:{}'.format(c, tol, cv_score))
         cv_score = sum(cv_score) / cv
         if best_score < cv_score:
             best_score = cv_score
-            best_params = [c, gamma]
+            best_params = [c, tol]
 
     print('Training finished best params = C:{}, gamma:{}'.format(*best_params))
 
-    clf = SVC(kernel='rbf', C=best_params[0], gamma=best_params[1])
+    clf = LinearSVC(C=best_params[0], tol=best_params[1], multi_class='ovr', max_iter=2000)
     pipe = Pipeline([
         ('word2vec', word2vec),
         ('clf', clf)
