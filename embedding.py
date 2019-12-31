@@ -31,10 +31,10 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
     def transform(self, X):
         data = []
         for sen in X:
-            data.append(self.vec2sen(sen))
+            data.append(self._vec2sen(sen))
         return np.stack(data, axis=0)
 
-    def vec2sen(self, X):
+    def _vec2sen(self, X):
         res = np.zeros(self.vector_size)
         for x in X:
             if x in self.model.wv:

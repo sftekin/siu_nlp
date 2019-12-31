@@ -16,8 +16,8 @@ def read_sup_dataset(path):
         data_path = os.path.join(path, label + '.txt')
         with open(data_path, 'r', encoding='utf-8') as f:
             for line in f.readlines():
-                words = line.rstrip().split()
-                x.append(words)
+                line = line.rstrip()
+                x.append(line)
                 y.append(label)
     return x, y
 
