@@ -5,7 +5,7 @@ dataset/twitter_6K/*
 !dataset/twitter_6K/.gitkeep
 
 embedding/*
-!embedding/embedding.py
+!embedding/.gitkeep
 
 results/*
 !results/.gitkeep

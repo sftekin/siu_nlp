@@ -3,7 +3,7 @@ import os
 from itertools import product
 from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
-from embedding.embedding import MeanEmbedding
+from embedding import MeanEmbedding
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import cross_val_score
 

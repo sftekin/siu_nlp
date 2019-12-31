@@ -50,7 +50,6 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
 if __name__ == '__main__':
 
     tokens = 'bir kac kisi geldi sadece'.split()
-
     word2vec = MeanEmbedding()
 
     vectors = word2vec.fit_transform(tokens)
