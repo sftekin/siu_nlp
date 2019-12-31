@@ -42,8 +42,8 @@ def main():
     ])
 
     # search = GridSearchCV(pipe, params, scoring='accuracy', n_jobs=-1, verbose=3)
-    pipe.fit(X_train[:10], y_train[:10])
-    print("Best parameter (CV score=%0.3f):" % pipe.score(X_test[:10], y_test[:10]))
+    pipe.fit(X_train, y_train)
+    print("Best parameter (CV score=%0.3f):" % pipe.score(X_test, y_test))
 
 
 if __name__ == '__main__':
