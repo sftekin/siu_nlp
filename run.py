@@ -20,12 +20,12 @@ def main():
     data_100k = read_unsup_dataset(tweet100k_path, pre_pro, sample_size=10000, load=False)
 
     params = {
-        'n_estimator': [1000, 5000],
-        'max_depth': [5000, 1000],
+        'n_estimator': [10000, 1000, 5000],
+        'max_depth': [10000, 5000, 1000],
         'cv': 3,
         'scoring': 'f1_micro',
         'model_name': 'random_forest',
-        'load': False
+        'load': True
     }
 
     model = train_model(data_6k, **params)
