@@ -5,6 +5,7 @@ import itertools
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import cross_val_score
 from sklearn.svm import LinearSVC
+from sklearn.ensemble import RandomForestClassifier
 from embedding import MeanEmbedding
 
 
@@ -23,10 +24,8 @@ def train_model(data, **params):
 
     best_score = 0
     best_params = []
-    for c, tol in itertools.product(params['c_list'], params['tol']):
-        clf = LinearSVC(C=c, multi_class='ovr',
-                        max_iter=2000, dual=False,
-                        tol=tol)
+    for n_est, max_depth in itertools.product(params['n_estimator'], params['max_depth']):
+        clf = RandomForestClassifier(n_estimators=n_est, n_jobs=-1)
 
         pipe = Pipeline([
             ('word2vec', word2vec),
@@ -34,13 +33,13 @@ def train_model(data, **params):
         ])
         cv_score = cross_val_score(pipe, X_train, y_train,
                                    cv=params['cv'], scoring=params['scoring'])
-        print('C:{}, tol:{}, cv_score:{}'.format(c, tol, cv_score))
+        print('n_est:{}, max_depth:{}, cv_score:{}'.format(n_est, max_depth, cv_score))
         cv_score = sum(cv_score) / params['cv']
         if best_score < cv_score:
             best_score = cv_score
-            best_params = [c, tol]
+            best_params = [n_est, max_depth]
 
-    print('Training finished best params = C:{}, tol:{}'.format(*best_params))
+    print('Training finished best params = n_est:{}, max_depth:{}'.format(*best_params))
 
     clf = LinearSVC(C=best_params[0], tol=best_params[1],
                     multi_class='ovr', max_iter=5000, dual=False)

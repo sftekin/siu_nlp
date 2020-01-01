@@ -21,11 +21,11 @@ def main():
 
 
     params = {
-        'c_list': [0.1, 2, 5, 10],
-        'tol': [1e-4, 1e-5],
+        'n_estimator': [10, 100, 300, 500],
+        'max_depth': [50, 100, 300],
         'cv': 3,
         'scoring': 'f1_micro',
-        'model_name': 'linear_svm',
+        'model_name': 'random_forest',
         'load': False
     }
 
@@ -39,11 +39,11 @@ def main():
     data_106k = train_test_split(X, y, test_size=0.2, stratify=y)
 
     params = {
-        'c_list': [0.1, 2, 5, 10],
-        'tol': [1e-4, 1e-5],
+        'n_estimator': [10, 100, 300, 500],
+        'max_depth': [3, 6, 9],
         'cv': 3,
         'scoring': 'f1_micro',
-        'model_name': 'linear_svm_big',
+        'model_name': 'random_forest_big',
         'load': False
     }
 
