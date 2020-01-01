@@ -13,8 +13,8 @@ def main():
 
     pre_pro = Preprocess()
 
-    X, y = read_sup_dataset(tweet6k_path, pre_pro)
-    data_6k = train_test_split(X, y, test_size=0.2, stratify=y)
+    X_sm, y_sm = read_sup_dataset(tweet6k_path, pre_pro)
+    data_6k = train_test_split(X_sm, y_sm, test_size=0.2, stratify=y_sm)
 
     data_100k = read_unsup_dataset(tweet100k_path, pre_pro)
 
@@ -31,8 +31,11 @@ def main():
     model6k = train_model(data_6k, **params)
     thresholds = plot_roc_curve(model6k, data_6k, fig_name='roc_6k')
 
-    X, y = self_label(model6k, data_100k, **thresholds)
-    data_100k = train_test_split(X, y, test_size=0.2, stratify=y)
+    X_big, y_big = self_label(model6k, data_100k, **thresholds)
+
+    # Merge data
+    X, y = X_big + X_sm, y_sm + y_big
+    data_106k = train_test_split(X, y, test_size=0.2, stratify=y)
 
     params = {
         'c_list': [0.1, 2, 5, 10],
@@ -43,8 +46,13 @@ def main():
         'load': True
     }
 
-    model100k = train_model(data_100k, **params)
-    thresholds = plot_roc_curve(model100k, data_6k, fig_name='roc_100k')
+    model106k = train_model(data_106k, **params)
+    thresholds = plot_roc_curve(model106k, data_6k, fig_name='roc_100k')
+
+    # test on first dataset
+    _, X_test, _, y_test = data_6k
+    score = model106k.score(X_test, y_test)
+    print(score)
 
 
 if __name__ == '__main__':
