@@ -34,7 +34,7 @@ def main():
     X_big, y_big = self_label(model6k, data_100k, **thresholds)
 
     # Merge data
-    X, y = X_big + X_sm, y_sm + y_big
+    X, y = X_big + X_sm, y_big + y_sm
     data_106k = train_test_split(X, y, test_size=0.2, stratify=y)
 
     params = {

@@ -69,7 +69,7 @@ def plot_roc_curve(model, data, fig_name=''):
     roc_auc = {}
 
     for idx, label in enumerate(['positive', 'negative', 'notr']):
-        y_labels = np.array(y_test != idx, dtype=np.int)
+        y_labels = np.array(y_test == idx, dtype=np.int)
         fpr[label], tpr[label], thresholds[label] = roc_curve(y_labels, y_score[:, idx])
         roc_auc[label] = auc(fpr[label], tpr[label])
 
