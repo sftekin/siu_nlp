@@ -32,7 +32,19 @@ def main():
     thresholds = plot_roc_curve(model6k, data_6k)
 
     X, y = self_label(model6k, data_100k, **thresholds)
-    print(len(X), len(y))
+    data_100k = train_test_split(X, y, test_size=0.2, stratify=y)
+
+    params = {
+        'c_list': [0.1, 2, 5, 10],
+        'tol': [1e-4, 1e-5],
+        'cv': 3,
+        'scoring': 'f1_micro',
+        'model_name': 'linear_svm_big',
+        'load': False
+    }
+
+    model100k = train_model(data_6k, **params)
+    thresholds = plot_roc_curve(model100k, data_6k)
 
 
 if __name__ == '__main__':
