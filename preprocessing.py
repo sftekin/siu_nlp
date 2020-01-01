@@ -3,12 +3,8 @@ import nltk
 import string
 
 from nltk.tokenize import TweetTokenizer
-
-try:
-    from nltk.corpus import stopwords
-except LookupError:
-    nltk.download('stopwords')
-    from nltk.corpus import stopwords
+# nltk.download('stopwords')
+from nltk.corpus import stopwords
 
 tur_stopwords = set(stopwords.words('turkish'))
 
