@@ -23,7 +23,7 @@ def read_sup_dataset(path, pre_pro):
             for line in f.readlines():
                 line = line.rstrip()
                 x.append(line)
-                y.append(label)
+                y.append(labels.index(label))
 
     x, y = pre_pro.transform(x, y)
     save_file = open(save_path, 'wb')
@@ -69,7 +69,7 @@ def plot_roc_curve(model, data, fig_name=''):
     roc_auc = {}
 
     for idx, label in enumerate(['positive', 'negative', 'notr']):
-        y_labels = np.array(y_test != label, dtype=np.int)
+        y_labels = np.array(y_test != idx, dtype=np.int)
         fpr[label], tpr[label], thresholds[label] = roc_curve(y_labels, y_score[:, idx])
         roc_auc[label] = auc(fpr[label], tpr[label])
 
@@ -104,10 +104,9 @@ def self_label(model, data, **thresholds):
     y_scores = model.decision_function(data)
     pred_class = np.argmax(y_scores, axis=1)
 
-    for data_idx, (score, pred_idx) in enumerate(zip(y_scores, pred_class)):
-        pred = labels[pred_idx]
-        thr = thresholds[pred]
-        if score[pred_idx] > thr:
+    for data_idx, (score, pred) in enumerate(zip(y_scores, pred_class)):
+        thr = thresholds[labels[pred]]
+        if score[pred] > thr:
             x.append(data[data_idx])
             y.append(pred)
 
