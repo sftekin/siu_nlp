@@ -1,9 +1,10 @@
 """
 """
-from run_helper import plot_roc_curve, read_unsup_dataset, read_sup_dataset
 from sklearn.model_selection import train_test_split
 from preprocessing import Preprocess
 from train import train_model
+from run_helper import plot_roc_curve, read_unsup_dataset, \
+    read_sup_dataset, self_label
 
 
 def main():
@@ -28,9 +29,10 @@ def main():
     }
 
     model6k = train_model(data_6k, **params)
-    # plot_roc_curve(model6k, data)
+    thresholds = plot_roc_curve(model6k, data_6k)
 
-
+    X, y = self_label(model6k, data_100k, **thresholds)
+    print(len(X), len(y))
 
 
 if __name__ == '__main__':

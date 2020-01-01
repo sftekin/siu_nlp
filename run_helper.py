@@ -78,6 +78,7 @@ def plot_roc_curve(model, data):
         threshold = thresholds[label][optimal_idx]
         plt.plot(thr_x, thr_y, 'mv', lw=2)
         plt.text(thr_x, thr_y, s='{:.2f}'.format(threshold), ha='right', va='bottom', fontsize=14)
+        thresholds[label] = threshold  # store only the bests
 
     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
 
@@ -88,3 +89,22 @@ def plot_roc_curve(model, data):
     plt.title('Receiver operating characteristic example')
     plt.legend(loc="lower right")
     plt.show()
+
+    return thresholds
+
+
+def self_label(model, data, **thresholds):
+    x = []
+    y = []
+    labels = ['positive', 'negative', 'notr']
+    y_scores = model.decision_function(data)
+    pred_class = np.argmax(y_scores, axis=1)
+
+    for data_idx, (score, pred_idx) in enumerate(zip(y_scores, pred_class)):
+        pred = labels[pred_idx]
+        thr = thresholds[pred]
+        if score[pred_idx] > thr:
+            x.append(data[data_idx])
+            y.append(pred)
+
+    return x, y
