@@ -11,8 +11,9 @@ def read_sup_dataset(path, pre_pro):
     if os.path.isfile(save_path):
         save_file = open(save_path, 'rb')
         x, y = pickle.load(save_file)
+        print('tweet_6k.pkl loaded')
         return x, y
-
+    print('tweet_6k.pkl not found creating,')
     labels = ['positive', 'negative', 'notr']
     x = []
     y = []
@@ -35,8 +36,10 @@ def read_unsup_dataset(path, pre_pro, sample_size=1e5):
     if os.path.isfile(save_path):
         save_file = open(save_path, 'rb')
         x = pickle.load(save_file)
+        print('tweet_100k.pkl loaded')
         return x
 
+    print('tweet_100k.pkl not found creating,')
     x = []
     data_path = os.path.join(path, 'tweets.txt')
     with open(data_path, 'r', encoding='utf-8') as f:
@@ -53,7 +56,9 @@ def read_unsup_dataset(path, pre_pro, sample_size=1e5):
     return x
 
 
-def plot_roc_curve(model, data):
+def plot_roc_curve(model, data, fig_name=''):
+    print('plotting roc curves')
+    save_path = os.path.join('results', fig_name + '.png')
     X_train, X_test, y_train, y_test = data
     y_test = np.array(y_test)
     y_score = model.decision_function(X_test)
@@ -88,8 +93,7 @@ def plot_roc_curve(model, data):
     plt.ylabel('True Positive Rate')
     plt.title('Receiver operating characteristic example')
     plt.legend(loc="lower right")
-    plt.show()
-
+    plt.savefig(save_path)
     return thresholds
 
 

@@ -14,10 +14,10 @@ def main():
     pre_pro = Preprocess()
 
     X, y = read_sup_dataset(tweet6k_path, pre_pro)
+    data_6k = train_test_split(X, y, test_size=0.2, stratify=y)
 
     data_100k = read_unsup_dataset(tweet100k_path, pre_pro)
 
-    data_6k = train_test_split(X, y, test_size=0.2, stratify=y)
 
     params = {
         'c_list': [0.1, 2, 5, 10],
@@ -29,7 +29,7 @@ def main():
     }
 
     model6k = train_model(data_6k, **params)
-    thresholds = plot_roc_curve(model6k, data_6k)
+    thresholds = plot_roc_curve(model6k, data_6k, fig_name='roc_6k')
 
     X, y = self_label(model6k, data_100k, **thresholds)
     data_100k = train_test_split(X, y, test_size=0.2, stratify=y)
@@ -40,11 +40,11 @@ def main():
         'cv': 3,
         'scoring': 'f1_micro',
         'model_name': 'linear_svm_big',
-        'load': False
+        'load': True
     }
 
     model100k = train_model(data_100k, **params)
-    thresholds = plot_roc_curve(model100k, data_6k)
+    thresholds = plot_roc_curve(model100k, data_6k, fig_name='roc_100k')
 
 
 if __name__ == '__main__':

@@ -13,8 +13,11 @@ def train_model(data, **params):
     model_path = os.path.join('models', params['model_name']+'.pkl')
     if os.path.isfile(model_path) and params['load']:
         model_file = open(model_path, 'rb')
-        return pickle.load(model_file)
+        model = pickle.load(model_file)
+        print('model {} found and loaded'.format(params['model_name']))
+        return model
 
+    print('model {} is not found and training...'.format(params['model_name']))
     X_train, X_test, y_train, y_test = data
     word2vec = MeanEmbedding()
 
