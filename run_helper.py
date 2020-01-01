@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve, auc, f1_score
 
 
 def read_sup_dataset(path, pre_pro, load=True):
@@ -82,7 +82,7 @@ def plot_roc_curve(model, data, fig_name=''):
         thr_x, thr_y = fpr[label][optimal_idx], tpr[label][optimal_idx]
         threshold = thresholds[label][optimal_idx]
         plt.plot(thr_x, thr_y, 'mv', lw=2)
-        plt.text(thr_x, thr_y, s='{:.2f}'.format(threshold), ha='right', va='bottom', fontsize=14)
+        plt.text(thr_x, thr_y, s='{:.2f}'.format(threshold), ha='right', va='bottom', fontsize=10)
         thresholds[label] = threshold  # store only the bests
 
     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
@@ -111,3 +111,13 @@ def self_label(model, data, **thresholds):
             y.append(pred)
 
     return x, y
+
+
+def compare_models(models, X_test, y_test, model_names):
+    for idx, model_name in enumerate(model_names):
+        y_pred = models[idx].predict(X_test, y_test)
+        macro = f1_score(y_test, y_pred, average='macro')
+        micro = f1_score(y_test, y_pred, average='micro')
+        weighted = f1_score(y_test, y_pred, average='weighted')
+        print('{} --> f1_macro: {}, '
+              'f1_micro: {}, f1_weighted: {}'.format(model_name, macro, micro, weighted))
