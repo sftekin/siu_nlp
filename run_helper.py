@@ -1,11 +1,18 @@
 import os
+import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 
 from sklearn.metrics import roc_curve, auc
 
 
-def read_sup_dataset(path):
+def read_sup_dataset(path, pre_pro):
+    save_path = os.path.join(path, 'tweet_6k.pkl')
+    if os.path.isfile(save_path):
+        save_file = open(save_path, 'rb')
+        x, y = pickle.load(save_file)
+        return x, y
+
     labels = ['positive', 'negative', 'notr']
     x = []
     y = []
@@ -16,10 +23,20 @@ def read_sup_dataset(path):
                 line = line.rstrip()
                 x.append(line)
                 y.append(label)
+
+    x, y = pre_pro.transform(x, y)
+    save_file = open(save_path, 'wb')
+    pickle.dump((x, y), save_file)
     return x, y
 
 
-def read_unsup_dataset(path, sample_size=1e5):
+def read_unsup_dataset(path, pre_pro, sample_size=1e5):
+    save_path = os.path.join(path, 'tweet_100k.pkl')
+    if os.path.isfile(save_path):
+        save_file = open(save_path, 'rb')
+        x = pickle.load(save_file)
+        return x
+
     x = []
     data_path = os.path.join(path, 'tweets.txt')
     with open(data_path, 'r', encoding='utf-8') as f:
@@ -30,6 +47,9 @@ def read_unsup_dataset(path, sample_size=1e5):
     x = x[np.random.permutation(len(x))]
     x = x[:int(sample_size)].tolist()
 
+    x = pre_pro.transform(x)
+    save_file = open(save_path, 'wb')
+    pickle.dump(x, save_file)
     return x
 
 

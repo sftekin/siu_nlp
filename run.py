@@ -12,11 +12,9 @@ def main():
 
     pre_pro = Preprocess()
 
-    X, y = read_sup_dataset(tweet6k_path)
-    X, y = pre_pro.transform(X, y)
+    X, y = read_sup_dataset(tweet6k_path, pre_pro)
 
-    data_100k = read_unsup_dataset(tweet100k_path)
-    data_100k = pre_pro.transform(data_100k)
+    data_100k = read_unsup_dataset(tweet100k_path, pre_pro)
 
     data_6k = train_test_split(X, y, test_size=0.2, stratify=y)
 
