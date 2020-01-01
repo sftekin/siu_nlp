@@ -15,6 +15,7 @@ def main():
 
     X_sm, y_sm = read_sup_dataset(tweet6k_path, pre_pro)
     data_6k = train_test_split(X_sm, y_sm, test_size=0.2, stratify=y_sm)
+    X_train, X_test, y_train, y_test = data_6k
 
     data_100k = read_unsup_dataset(tweet100k_path, pre_pro, sample_size=6000)
 
@@ -34,7 +35,7 @@ def main():
     X_big, y_big = self_label(model6k, data_100k, **thresholds)
 
     # Merge data
-    X, y = X_big[:10000] + X_sm, y_big[:10000] + y_sm
+    X, y = X_big + X_train, y_big + y_train
     data_106k = train_test_split(X, y, test_size=0.2, stratify=y)
 
     params = {
@@ -50,7 +51,6 @@ def main():
     thresholds = plot_roc_curve(model106k, data_6k, fig_name='roc_100k')
 
     # test on first dataset
-    _, X_test, _, y_test = data_6k
     score_original = model6k.score(X_test, y_test)
     score_self_learned = model106k.score(X_test, y_test)
     print('Original model score on test_data:{}\n'

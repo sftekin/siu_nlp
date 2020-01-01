@@ -13,7 +13,7 @@ def read_sup_dataset(path, pre_pro, load=True):
         x, y = pickle.load(save_file)
         print('tweet_6k.pkl loaded')
         return x, y
-    print('tweet_6k.pkl not found creating,')
+    print('Reading supervised dataset')
     labels = ['positive', 'negative', 'notr']
     x = []
     y = []
@@ -39,7 +39,7 @@ def read_unsup_dataset(path, pre_pro, sample_size=1e5, load=False):
         print('tweet_100k.pkl loaded')
         return x
 
-    print('tweet_100k.pkl not found creating,')
+    print('Reading UNsupervised dataset')
     x = []
     data_path = os.path.join(path, 'tweets.txt')
     with open(data_path, 'r', encoding='utf-8') as f:

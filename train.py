@@ -17,7 +17,7 @@ def train_model(data, **params):
         print('model {} found and loaded'.format(params['model_name']))
         return model
 
-    print('model {} is not found and training...'.format(params['model_name']))
+    print('model {} is training...'.format(params['model_name']))
     X_train, X_test, y_train, y_test = data
     word2vec = MeanEmbedding()
 
