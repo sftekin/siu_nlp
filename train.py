@@ -25,7 +25,7 @@ def train_model(data, **params):
     best_score = 0
     best_params = []
     for n_est, max_depth in itertools.product(params['n_estimator'], params['max_depth']):
-        clf = RandomForestClassifier(n_estimators=n_est, n_jobs=-1)
+        clf = RandomForestClassifier(n_estimators=n_est, max_depth=max_depth, n_jobs=-1)
 
         pipe = Pipeline([
             ('word2vec', word2vec),
@@ -41,8 +41,7 @@ def train_model(data, **params):
 
     print('Training finished best params = n_est:{}, max_depth:{}'.format(*best_params))
 
-    clf = LinearSVC(C=best_params[0], tol=best_params[1],
-                    multi_class='ovr', max_iter=5000, dual=False)
+    clf = RandomForestClassifier(n_estimators=best_params[0], max_depth=best_params[1])
     pipe = Pipeline([
         ('word2vec', word2vec),
         ('clf', clf)

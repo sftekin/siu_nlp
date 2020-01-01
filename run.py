@@ -21,8 +21,8 @@ def main():
 
 
     params = {
-        'n_estimator': [10, 100, 300, 500],
-        'max_depth': [50, 100, 300],
+        'n_estimator': [1000, 2000, 3000],
+        'max_depth': [1000, 2000, 3000],
         'cv': 3,
         'scoring': 'f1_micro',
         'model_name': 'random_forest',
@@ -39,8 +39,8 @@ def main():
     data_106k = train_test_split(X, y, test_size=0.2, stratify=y)
 
     params = {
-        'n_estimator': [10, 100, 300, 500],
-        'max_depth': [50, 100, 300],
+        'n_estimator': [1000, 2000, 3000],
+        'max_depth': [1000, 2000, 3000],
         'cv': 3,
         'scoring': 'f1_micro',
         'model_name': 'random_forest_big',
