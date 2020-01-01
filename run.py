@@ -40,7 +40,7 @@ def main():
 
     params = {
         'n_estimator': [10, 100, 300, 500],
-        'max_depth': [3, 6, 9],
+        'max_depth': [50, 100, 300],
         'cv': 3,
         'scoring': 'f1_micro',
         'model_name': 'random_forest_big',

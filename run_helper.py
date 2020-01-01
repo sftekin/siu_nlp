@@ -61,7 +61,7 @@ def plot_roc_curve(model, data, fig_name=''):
     save_path = os.path.join('results', fig_name + '.png')
     X_train, X_test, y_train, y_test = data
     y_test = np.array(y_test)
-    y_score = model.decision_function(X_test)
+    y_score = model.predict_proba(X_test)
 
     fpr = {}
     tpr = {}
@@ -101,7 +101,7 @@ def self_label(model, data, **thresholds):
     x = []
     y = []
     labels = ['positive', 'negative', 'notr']
-    y_scores = model.decision_function(data)
+    y_scores = model.predict_proba(data)
     pred_class = np.argmax(y_scores, axis=1)
 
     for data_idx, (score, pred) in enumerate(zip(y_scores, pred_class)):
