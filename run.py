@@ -30,7 +30,9 @@ def main():
 
     model = train_model(data_6k, **params)
     score_original = model.score(X_test, y_test)
+    print(score_original)
     thresholds = plot_roc_curve(model, data_6k, fig_name='roc_6k')
+    print(model.score(X_test, y_test))
 
     # label data
     X_big, y_big = self_label(model, data_100k, **thresholds)
@@ -39,7 +41,7 @@ def main():
     X, y = X_big + X_train, y_big + y_train
 
     print('Training the model with merged data')
-    model.fit(X, y)
+    model = model.fit(X, y)
     thresholds = plot_roc_curve(model, data_6k, fig_name='roc_100k')
 
     # test on first dataset
@@ -48,6 +50,7 @@ def main():
           'Self learned model average precision score on test_data:{}'.format(score_original, score_self_learned))
 
     # compare_models([model, model106k], X_test, y_test, ['6k', '10k'])
+
 
 if __name__ == '__main__':
     main()

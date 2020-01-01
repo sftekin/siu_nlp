@@ -106,7 +106,7 @@ def self_label(model, data, **thresholds):
 
     for data_idx, (score, pred) in enumerate(zip(y_scores, pred_class)):
         thr = thresholds[labels[pred]]
-        if score[pred] > thr:
+        if score[pred] > 0.5:
             x.append(data[data_idx])
             y.append(pred)
 
