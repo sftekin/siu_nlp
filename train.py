@@ -40,7 +40,7 @@ def train_model(data, **params):
             best_score = cv_score
             best_params = [c, tol]
 
-    print('Training finished best params = C:{}, gamma:{}'.format(*best_params))
+    print('Training finished best params = C:{}, tol:{}'.format(*best_params))
 
     clf = LinearSVC(C=best_params[0], tol=best_params[1],
                     multi_class='ovr', max_iter=5000, dual=False)

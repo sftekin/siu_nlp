@@ -51,8 +51,10 @@ def main():
 
     # test on first dataset
     _, X_test, _, y_test = data_6k
-    score = model106k.score(X_test, y_test)
-    print(score)
+    score_original = model6k.score(X_test, y_test)
+    score_self_learned = model106k.score(X_test, y_test)
+    print('Original model score on test_data:{}\n'
+          'Self learned model score on test_data:{}'.format(score_original, score_self_learned))
 
 
 if __name__ == '__main__':
