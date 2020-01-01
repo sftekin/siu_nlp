@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
 
 
-def read_sup_dataset(path, pre_pro):
+def read_sup_dataset(path, pre_pro, load=True):
     save_path = os.path.join(path, 'tweet_6k.pkl')
-    if os.path.isfile(save_path):
+    if os.path.isfile(save_path) and load:
         save_file = open(save_path, 'rb')
         x, y = pickle.load(save_file)
         print('tweet_6k.pkl loaded')
@@ -31,9 +31,9 @@ def read_sup_dataset(path, pre_pro):
     return x, y
 
 
-def read_unsup_dataset(path, pre_pro, sample_size=1e5):
+def read_unsup_dataset(path, pre_pro, sample_size=1e5, load=False):
     save_path = os.path.join(path, 'tweet_100k.pkl')
-    if os.path.isfile(save_path):
+    if os.path.isfile(save_path) and load:
         save_file = open(save_path, 'rb')
         x = pickle.load(save_file)
         print('tweet_100k.pkl loaded')

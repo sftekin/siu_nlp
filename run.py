@@ -16,7 +16,7 @@ def main():
     X_sm, y_sm = read_sup_dataset(tweet6k_path, pre_pro)
     data_6k = train_test_split(X_sm, y_sm, test_size=0.2, stratify=y_sm)
 
-    data_100k = read_unsup_dataset(tweet100k_path, pre_pro)
+    data_100k = read_unsup_dataset(tweet100k_path, pre_pro, sample_size=6000)
 
 
     params = {
@@ -25,7 +25,7 @@ def main():
         'cv': 3,
         'scoring': 'f1_micro',
         'model_name': 'linear_svm',
-        'load': True
+        'load': False
     }
 
     model6k = train_model(data_6k, **params)
@@ -43,7 +43,7 @@ def main():
         'cv': 3,
         'scoring': 'f1_micro',
         'model_name': 'linear_svm_big',
-        'load': True
+        'load': False
     }
 
     model106k = train_model(data_106k, **params)
