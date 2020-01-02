@@ -17,7 +17,7 @@ def main():
     data_6k = train_test_split(X, y, test_size=0.2, stratify=y)
     X_train, X_test, y_train, y_test = data_6k
 
-    data_100k = read_unsup_dataset(tweet100k_path, pre_pro, sample_size=100000, load=False)
+    data_100k = read_unsup_dataset(tweet100k_path, pre_pro, sample_size=200000, load=False)
 
     params = {
         'c_list': [0.1, 2, 5, 10],
