@@ -17,20 +17,19 @@ def main():
     data_6k = train_test_split(X, y, test_size=0.2, stratify=y)
     X_train, X_test, y_train, y_test = data_6k
 
-    data_100k = read_unsup_dataset(tweet100k_path, pre_pro, sample_size=10000, load=False)
+    data_100k = read_unsup_dataset(tweet100k_path, pre_pro, sample_size=100000, load=False)
 
     params = {
-        'n_estimator': [1000],
-        'max_depth': [5000],
+        'c_list': [0.1, 2, 5, 10],
+        'tol': [1e-4, 1e-5],
         'cv': 3,
         'scoring': 'f1_micro',
-        'model_name': 'random_forest',
-        'load': True
+        'model_name': 'linear_svm',
+        'load': False
     }
 
     model = train_model(data_6k, **params)
     score_original = model.score(X_test, y_test)
-    print(score_original)
     thresholds = plot_roc_curve(model, data_6k, fig_name='roc_6k')
     print(model.score(X_test, y_test))
 
