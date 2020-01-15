@@ -22,6 +22,11 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
 
         self.vector_size = self.model.vector_size
 
+        out_of_vocab_vector = np.random.rand(1, self.vector_size)[0]
+        out_of_vocab_vector = out_of_vocab_vector - np.linalg.norm(out_of_vocab_vector)
+
+        self.out_of_vocab_vector = out_of_vocab_vector
+
     def fit(self, *_):
         return self
 
@@ -39,15 +44,9 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
             elif x.lower() in self.model.wv:
                 r = self.model.wv[x.lower()]
             else:
-                r = self._get_random_vec()
-                self.model.add(x, r)
+                r = self.out_of_vocab_vector
             res += r
         return res / len(X)
-
-    def _get_random_vec(self):
-        out_of_vocab_vector = np.random.rand(1, self.vector_size)[0]
-        out_of_vocab_vector = out_of_vocab_vector - np.linalg.norm(out_of_vocab_vector)
-        return out_of_vocab_vector
 
 
 if __name__ == '__main__':
