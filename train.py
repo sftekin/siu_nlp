@@ -4,9 +4,9 @@ import itertools
 
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import cross_val_score
+from embedding import MeanEmbedding
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import RandomForestClassifier
-from embedding import MeanEmbedding
 
 
 def train_model(data, **params):
@@ -30,7 +30,7 @@ def train_model(data, **params):
     best_score = 0
     best_params = []
     for p1, p2 in itertools.product(*model_params):
-
+        print('Training started..')
         if params['model_name'] == 'linear_svm':
             clf = LinearSVC(C=p1, tol=p2, multi_class='ovr',
                             max_iter=2000, dual=False)
