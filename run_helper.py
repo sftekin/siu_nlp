@@ -96,11 +96,11 @@ def plot_roc_curve(confidence_fun, X_test, y_test, fig_name=''):
     return thresholds
 
 
-def self_label(confidence_fun, data, threshold):
+def self_label(confidence_fun, word2vec, data, threshold):
     x = []
     y = []
     # labels = ['positive', 'negative', 'notr']
-    y_scores = confidence_fun(data)
+    y_scores = confidence_fun(word2vec.transform(data))
     pred_class = np.argmax(y_scores, axis=1)
 
     for data_idx, (score, pred) in enumerate(zip(y_scores, pred_class)):

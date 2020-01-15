@@ -38,10 +38,12 @@ def main():
     # label data
     thresholds = [1, 0.85]
     X_big_1, y_big_1 = self_label(model_1.decision_function,
-                                  word2vec.transform(data_100k),
+                                  word2vec,
+                                  data_100k,
                                   thresholds[0])
     X_big_2, y_big_2 = self_label(model_2.predict_proba,
-                                  word2vec.transform(data_100k),
+                                  word2vec,
+                                  data_100k,
                                   thresholds[1])
 
     # Merge data
