@@ -31,7 +31,7 @@ def main():
     model_2 = train_model(data_6k, word2vec, **model_config['RandomForest'])
 
     for model in [model_1, model_2]:
-        score_original = model.score(X_test, y_test)
+        score_original = model.score(word2vec.transform(X_test), y_test)
         plot_roc_curve(model, data_6k, fig_name='roc_6k')
         print(score_original)
 
