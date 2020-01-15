@@ -54,7 +54,8 @@ def train_model(data, word2vec, **params):
                         multi_class='ovr', max_iter=5000, dual=False)
     else:
         clf = RandomForestClassifier(n_estimators=best_params[0],
-                                     max_depth=best_params[1])
+                                     max_depth=best_params[1],
+                                     n_jobs=-1)
 
     clf.fit(word_embeds, y_train)
     print("Best parameter Score "
