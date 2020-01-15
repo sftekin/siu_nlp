@@ -10,7 +10,7 @@ from embedding import MeanEmbedding
 
 
 def train_model(data, **params):
-    # Check pretrained model
+    # Check pre-trained model
     model_path = os.path.join('models', params['model_name']+'.pkl')
     if os.path.isfile(model_path) and params['load']:
         model_file = open(model_path, 'rb')
@@ -22,12 +22,20 @@ def train_model(data, **params):
     X_train, X_test, y_train, y_test = data
     word2vec = MeanEmbedding()
 
+    if params['model_name'] == 'LinSVM':
+        model_params = [params['c_list'], params['tol']]
+    else:
+        model_params = [params['n_estimator'], params['max_depth']]
+
     best_score = 0
     best_params = []
-    for c, tol in itertools.product(params['c_list'], params['tol']):
-        clf = LinearSVC(C=c, multi_class='ovr',
-                        max_iter=2000, dual=False,
-                        tol=tol)
+    for p1, p2 in itertools.product(*model_params):
+
+        if params['model_name'] == 'LinSVM':
+            clf = LinearSVC(C=p1, tol=p2, multi_class='ovr',
+                            max_iter=2000, dual=False)
+        else:
+            clf = RandomForestClassifier(n_estimators=p1, max_depth=p2)
 
         pipe = Pipeline([
             ('word2vec', word2vec),
@@ -35,16 +43,25 @@ def train_model(data, **params):
         ])
         cv_score = cross_val_score(pipe, X_train, y_train,
                                    cv=params['cv'], scoring=params['scoring'])
-        print('C:{}, tol:{}, cv_score:{}'.format(c, tol, cv_score))
+        print('first_param:{}, '
+              'second_param:{}, '
+              'cv_score:{}'.format(p1, p2, cv_score))
+
         cv_score = sum(cv_score) / params['cv']
         if best_score < cv_score:
             best_score = cv_score
-            best_params = [c, tol]
+            best_params = [p1, p2]
 
-    print('Training finished best params = C:{}, tol:{}'.format(*best_params))
+    print('Training finished best params = '
+          'first_param:{}, second_param:{}'.format(*best_params))
 
-    clf = LinearSVC(C=best_params[0], tol=best_params[1],
-                    multi_class='ovr', max_iter=5000, dual=False)
+    if params['model_name'] == 'LinSVM':
+        clf = LinearSVC(C=best_params[0], tol=best_params[1],
+                        multi_class='ovr', max_iter=5000, dual=False)
+    else:
+        clf = RandomForestClassifier(n_estimators=best_params[0],
+                                     max_depth=best_params[1])
+
     pipe = Pipeline([
         ('word2vec', word2vec),
         ('clf', clf)

@@ -1,8 +1,7 @@
-"""
-"""
 from sklearn.model_selection import train_test_split
 from preprocessing import Preprocess
 from train import train_model
+from config import model_config
 from run_helper import plot_roc_curve, read_unsup_dataset, \
     read_sup_dataset, self_label, compare_models
 
@@ -13,40 +12,41 @@ def main():
 
     pre_pro = Preprocess()
 
+    # Load Data sets
+    # Supervised data
     X, y = read_sup_dataset(tweet6k_path, pre_pro)
-    data_6k = train_test_split(X, y, test_size=0.2, stratify=y)
-    X_train, X_test, y_train, y_test = data_6k
-
+    # Unsupervised data
     data_100k = read_unsup_dataset(tweet100k_path, pre_pro, sample_size=100000, load=False)
 
-    params = {
-        'c_list': [0.1, 2, 5, 10],
-        'tol': [1e-4, 1e-5],
-        'cv': 3,
-        'scoring': 'f1_micro',
-        'model_name': 'linear_svm',
-        'load': False
-    }
+    data_6k = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+    X_train, X_test, y_train, y_test = data_6k
 
-    model = train_model(data_6k, **params)
-    score_original = model.score(X_test, y_test)
-    thresholds = plot_roc_curve(model, data_6k, fig_name='roc_6k')
-    print(model.score(X_test, y_test))
+    # Store the initial performance of models
+    model_1 = train_model(data_6k, **model_config['LinSVM'])
+    model_2 = train_model(data_6k, **model_config['RandomForest'])
+
+    for model in [model_1, model_2]:
+        score_original = model.score(X_test, y_test)
+        plot_roc_curve(model, data_6k, fig_name='roc_6k')
+        print(score_original)
 
     # label data
-    X_big, y_big = self_label(model, data_100k, **thresholds)
+    thresholds = [1, 0.85]
+    X_big_1, y_big_1 = self_label(model_1, data_100k, thresholds[0])
+    X_big_2, y_big_2 = self_label(model_2, data_100k, thresholds[1])
 
     # Merge data
-    X, y = X_big + X_train, y_big + y_train
+    X, y = X_big_1 + X_big_2 + X_train, y_big_1 + y_big_2 + y_train
 
-    print('Training the model with merged data')
-    model = model.fit(X, y)
-    thresholds = plot_roc_curve(model, data_6k, fig_name='roc_100k')
+    for model in [model_1, model_2]:
+        print('Training the model with merged data')
+        model = model.fit(X, y)
+        plot_roc_curve(model, data_6k, fig_name='roc_100k')
 
-    # test on first dataset
-    score_self_learned = model.score(X_test, y_test)
-    print('Original model average precision score on test_data:{}\n'
-          'Self learned model average precision score on test_data:{}'.format(score_original, score_self_learned))
+        # test on first dataset
+        score_self_learned = model.score(X_test, y_test)
+        print('Original model average precision score on test_data:{}\n'
+              'Self learned model average precision score on test_data:{}'.format(score_original, score_self_learned))
 
     # compare_models([model, model106k], X_test, y_test, ['6k', '10k'])
 

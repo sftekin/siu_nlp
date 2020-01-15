@@ -97,16 +97,16 @@ def plot_roc_curve(model, data, fig_name=''):
     return thresholds
 
 
-def self_label(model, data, **thresholds):
+def self_label(model, data, threshold):
     x = []
     y = []
-    labels = ['positive', 'negative', 'notr']
+    # labels = ['positive', 'negative', 'notr']
     y_scores = model.decision_function(data)
     pred_class = np.argmax(y_scores, axis=1)
 
     for data_idx, (score, pred) in enumerate(zip(y_scores, pred_class)):
-        thr = thresholds[labels[pred]]
-        if score[pred] > 1:
+        # thr = thresholds[labels[pred]]
+        if score[pred] > threshold:
             x.append(data[data_idx])
             y.append(pred)
     print(len(x))
