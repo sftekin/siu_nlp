@@ -31,7 +31,7 @@ def train_model(data, **params):
     best_params = []
     for p1, p2 in itertools.product(*model_params):
 
-        if params['model_name'] == 'LinSVM':
+        if params['model_name'] == 'linear_svm':
             clf = LinearSVC(C=p1, tol=p2, multi_class='ovr',
                             max_iter=2000, dual=False)
         else:
@@ -55,7 +55,7 @@ def train_model(data, **params):
     print('Training finished best params = '
           'first_param:{}, second_param:{}'.format(*best_params))
 
-    if params['model_name'] == 'LinSVM':
+    if params['model_name'] == 'linear_svm':
         clf = LinearSVC(C=best_params[0], tol=best_params[1],
                         multi_class='ovr', max_iter=5000, dual=False)
     else:
