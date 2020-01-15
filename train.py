@@ -22,7 +22,7 @@ def train_model(data, **params):
     X_train, X_test, y_train, y_test = data
     word2vec = MeanEmbedding()
 
-    if params['model_name'] == 'LinSVM':
+    if params['model_name'] == 'linear_svm':
         model_params = [params['c_list'], params['tol']]
     else:
         model_params = [params['n_estimator'], params['max_depth']]
