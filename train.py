@@ -2,14 +2,12 @@ import os
 import pickle
 import itertools
 
-from sklearn.pipeline import Pipeline
 from sklearn.model_selection import cross_val_score
-from embedding import MeanEmbedding
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import RandomForestClassifier
 
 
-def train_model(data, **params):
+def train_model(data, word2vec, **params):
     # Check pre-trained model
     model_path = os.path.join('models', params['model_name']+'.pkl')
     if os.path.isfile(model_path) and params['load']:
@@ -20,7 +18,8 @@ def train_model(data, **params):
 
     print('model {} is training...'.format(params['model_name']))
     X_train, X_test, y_train, y_test = data
-    word2vec = MeanEmbedding()
+
+    word_embeds = word2vec.transform(X_train)
 
     if params['model_name'] == 'linear_svm':
         model_params = [params['c_list'], params['tol']]
@@ -30,18 +29,13 @@ def train_model(data, **params):
     best_score = 0
     best_params = []
     for p1, p2 in itertools.product(*model_params):
-        print('Training started..')
         if params['model_name'] == 'linear_svm':
             clf = LinearSVC(C=p1, tol=p2, multi_class='ovr',
                             max_iter=2000, dual=False)
         else:
             clf = RandomForestClassifier(n_estimators=p1, max_depth=p2)
 
-        pipe = Pipeline([
-            ('word2vec', word2vec),
-            ('clf', clf)
-        ])
-        cv_score = cross_val_score(pipe, X_train, y_train,
+        cv_score = cross_val_score(clf, word_embeds, y_train,
                                    cv=params['cv'], scoring=params['scoring'])
         print('first_param:{}, '
               'second_param:{}, '
@@ -62,15 +56,13 @@ def train_model(data, **params):
         clf = RandomForestClassifier(n_estimators=best_params[0],
                                      max_depth=best_params[1])
 
-    pipe = Pipeline([
-        ('word2vec', word2vec),
-        ('clf', clf)
-    ])
-    pipe.fit(X_train, y_train)
-    print("Best parameter Score (CV f1_micro_score=%0.3f):" % pipe.score(X_test, y_test))
+    clf.fit(word_embeds, y_train)
+    print("Best parameter Score "
+          "(CV f1_micro_score=%0.3f):" % clf.score(word2vec.transform(X_test),
+                                                   y_test))
     print('Saving the model')
     model_file = open(model_path, 'wb')
-    pickle.dump(pipe, model_file)
-    return pipe
+    pickle.dump(clf, model_file)
+    return clf
 
 

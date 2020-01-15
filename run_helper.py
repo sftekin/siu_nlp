@@ -31,7 +31,7 @@ def read_sup_dataset(path, pre_pro, load=True):
     return x, y
 
 
-def read_unsup_dataset(path, pre_pro, sample_size=1e5, load=False):
+def read_unsup_dataset(path, pre_pro, sample_size=1e5, load=True):
     save_path = os.path.join(path, 'tweet_100k.pkl')
     if os.path.isfile(save_path) and load:
         save_file = open(save_path, 'rb')
@@ -97,11 +97,11 @@ def plot_roc_curve(model, data, fig_name=''):
     return thresholds
 
 
-def self_label(model, data, threshold):
+def self_label(confidence_fun, data, threshold):
     x = []
     y = []
     # labels = ['positive', 'negative', 'notr']
-    y_scores = model.decision_function(data)
+    y_scores = confidence_fun(data)
     pred_class = np.argmax(y_scores, axis=1)
 
     for data_idx, (score, pred) in enumerate(zip(y_scores, pred_class)):

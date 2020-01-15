@@ -11,11 +11,9 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
         self.vector_path = 'embedding/word2vec.vec'
 
         if os.path.isfile(self.model_path):
-            print('loading embeddings from pickle')
             model_file = open(self.model_path, 'rb')
             self.model = pickle.load(model_file)
         else:
-            print('loading embeddings from model')
             self.model = KeyedVectors.load_word2vec_format(self.vector_path, binary=False, unicode_errors='replace')
             model_file = open(self.model_path, 'wb')
             pickle.dump(self.model, model_file)
