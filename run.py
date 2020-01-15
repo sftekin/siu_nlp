@@ -32,7 +32,7 @@ def main():
 
     for model in [model_1, model_2]:
         score_original = model.score(word2vec.transform(X_test), y_test)
-        plot_roc_curve(model, data_6k, fig_name='roc_6k')
+        # plot_roc_curve(model, data_6k, fig_name='roc_6k')
         print(score_original)
 
     # label data
@@ -51,7 +51,7 @@ def main():
         print('Training the model with merged data')
         word_embeds = word2vec.transform(X)
         model = model.fit(word_embeds, y)
-        plot_roc_curve(model, data_6k, fig_name='roc_100k')
+        # plot_roc_curve(model, data_6k, fig_name='roc_100k')
 
         # test on first dataset
         score_self_learned = model.score(word2vec.transform(X_test),

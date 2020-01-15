@@ -56,12 +56,11 @@ def read_unsup_dataset(path, pre_pro, sample_size=1e5, load=True):
     return x
 
 
-def plot_roc_curve(model, data, fig_name=''):
+def plot_roc_curve(confidence_fun, X_test, y_test, fig_name=''):
     print('plotting roc curves')
     save_path = os.path.join('results', fig_name + '.png')
-    X_train, X_test, y_train, y_test = data
     y_test = np.array(y_test)
-    y_score = model.decision_function(X_test)
+    y_score = confidence_fun(X_test)
 
     fpr = {}
     tpr = {}
