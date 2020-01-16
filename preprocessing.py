@@ -1,5 +1,4 @@
 import re
-import nltk
 import emoji
 import string
 
@@ -14,10 +13,10 @@ class Preprocess:
     def __init__(self):
         self.tokenizer = TweetTokenizer()
 
-        # remove url, long-mention, mention, hash-tag, emoji
+        # remove url, long-mention, mention, hash-tag
         self.re_list = [r'http\S+', r'\(@ ?[^\s].+\)', r'@ ?[^\s]+', r'# ?[^\s]+']
 
-        # before tokenization
+        # before tokenization, emoji
         self.rmv_emoji = lambda x: emoji.get_emoji_regexp().sub(r'', x)
 
         # after tokenization
@@ -32,19 +31,19 @@ class Preprocess:
         :param X: [str, str, ..., str]
         :return:[[token , ..., token], ..., [token , ..., token]]
         """
-        clean_data = []
+        clear_data = []
         if y:
             labels = []
         for idx, sen in enumerate(X):
             tokens = self._preprocess(sen)
             if len(tokens) > 0:
-                clean_data.append(tokens)
+                clear_data.append(tokens)
                 if y:
                     labels.append(y[idx])
         if y:
-            return_val = clean_data, labels
+            return_val = clear_data, labels
         else:
-            return_val = clean_data
+            return_val = clear_data
         return return_val
 
     def _preprocess(self, sentence):
