@@ -21,7 +21,7 @@ class Preprocess:
         self.rmv_emoji = lambda x: emoji.get_emoji_regexp().sub(r'', x)
 
         # textual emoji
-        self.pattern_happy_emoji = re.compile(r'([:;=] ?-?(\)|D+|d+))|(\(:)')
+        self.pattern_happy_emoji = re.compile(r'([:;=] ?-?(\)|D+|d+|P))')
         self.pattern_unhappy_emoji = re.compile(r'(: ?-?(\(|/|([Ss]))+)')
 
         # after tokenizing
@@ -51,6 +51,7 @@ class Preprocess:
             return_val = clean_data, labels
         else:
             return_val = clean_data
+        extracted_features = np.array(extracted_features)
         return return_val, extracted_features
 
     def _preprocess(self, sentence):
@@ -76,12 +77,10 @@ class Preprocess:
         emoji_flag = np.array([0, 0])
 
         # search for happy emoji
-        if self.pattern_happy_emoji.search(sentence):
-            emoji_flag[0] = 1
+        emoji_flag[0] = len(self.pattern_happy_emoji.findall(sentence))
 
         # search for unhappy emoji
-        if self.pattern_unhappy_emoji.search(sentence):
-            emoji_flag[1] = 1
+        emoji_flag[1] = len(self.pattern_unhappy_emoji.findall(sentence))
         return emoji_flag
 
 

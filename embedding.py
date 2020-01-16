@@ -45,12 +45,3 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
                 r = self.out_of_vocab_vector
             res += r
         return res / len(X)
-
-
-if __name__ == '__main__':
-
-    tokens = 'bir kac kisi geldi sadece'.split()
-    word2vec = MeanEmbedding()
-
-    vectors = word2vec.fit_transform(tokens)
-    print(vectors)

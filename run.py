@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.model_selection import train_test_split
 from preprocessing import Preprocess
 from train import train_model
@@ -21,8 +22,10 @@ def main():
     # Create the word2vec object
     word2vec = MeanEmbedding()
     X_vectors = word2vec.transform(X)
+    X_vectors = np.concatenate((X_vectors, features), axis=1)
 
-    data_6k = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
+    data_6k = train_test_split(X_vectors, y, test_size=0.2, stratify=y, random_state=42)
+
 
 
 if __name__ == '__main__':
