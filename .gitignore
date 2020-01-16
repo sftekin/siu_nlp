@@ -4,6 +4,9 @@
 dataset/twitter_6K/*
 !dataset/twitter_6K/.gitkeep
 
+dataset/twitter_20K/*
+!dataset/twitter_20K/.gitkeep
+
 dataset/twitter_100K/*
 !dataset/twitter_100K/.gitkeep
 

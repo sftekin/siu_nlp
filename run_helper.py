@@ -7,14 +7,14 @@ from sklearn.metrics import roc_curve, auc, f1_score
 
 
 def read_sup_dataset(path, pre_pro, load=True):
-    save_path = os.path.join(path, 'tweet_6k.pkl')
+    save_path = os.path.join(path, 'tweet_20k.pkl')
     if os.path.isfile(save_path) and load:
         save_file = open(save_path, 'rb')
-        x, y = pickle.load(save_file)
-        print('tweet_6k.pkl loaded')
-        return x, y
+        x, y, features = pickle.load(save_file)
+        print('tweet_20k.pkl loaded')
+        return (x, y), features
     print('Reading supervised dataset')
-    labels = ['positive', 'negative', 'notr']
+    labels = ['positive', 'negative']
     x = []
     y = []
     for label in labels:
@@ -25,10 +25,10 @@ def read_sup_dataset(path, pre_pro, load=True):
                 x.append(line)
                 y.append(labels.index(label))
 
-    x, y = pre_pro.transform(x, y)
+    (x, y), features = pre_pro.transform(x, y)
     save_file = open(save_path, 'wb')
-    pickle.dump((x, y), save_file)
-    return x, y
+    pickle.dump((x, y, features), save_file)
+    return (x, y), features
 
 
 def read_unsup_dataset(path, pre_pro, sample_size=1e5, load=True):
