@@ -5,8 +5,10 @@ from gensim.models import KeyedVectors
 from sklearn.base import BaseEstimator, TransformerMixin
 
 
-class MeanEmbedding(BaseEstimator, TransformerMixin):
-    def __init__(self):
+class Embedding(BaseEstimator, TransformerMixin):
+    def __init__(self, seq_len):
+        self.seq_len = seq_len
+
         self.model_path = 'embedding/word2vec.pkl'
         self.vector_path = 'embedding/word2vec.vec'
 
@@ -24,6 +26,7 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
         out_of_vocab_vector = out_of_vocab_vector - np.linalg.norm(out_of_vocab_vector)
 
         self.out_of_vocab_vector = out_of_vocab_vector
+        self.pad_vector = np.zeros((self.vector_size,))
 
     def fit(self, *_):
         return self
@@ -35,7 +38,7 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
         return np.stack(data, axis=0)
 
     def _vec2sen(self, X):
-        res = np.zeros(self.vector_size)
+        res = []
         for x in X:
             if x in self.model.wv:
                 r = self.model.wv[x]
@@ -43,5 +46,9 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
                 r = self.model.wv[x.lower()]
             else:
                 r = self.out_of_vocab_vector
-            res += r
-        return res / len(X)
+            res.append(r)
+        if len(res) < self.seq_len:
+            for _ in range(self.seq_len - len(res)):
+                res.append(self.pad_vector)
+        res = np.stack(res, axis=0)
+        return res
