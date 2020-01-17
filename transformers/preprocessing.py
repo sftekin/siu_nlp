@@ -1,10 +1,10 @@
 import re
 import emoji
 import string
-import numpy as np
+import nltk
 
 from nltk.tokenize import TweetTokenizer
-# nltk.download('stopwords')
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 
 tur_stopwords = set(stopwords.words('turkish'))

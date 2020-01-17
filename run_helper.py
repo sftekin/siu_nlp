@@ -92,22 +92,15 @@ def preprocess_set(x, y, seq_len=15):
     return x, y, int2word, word2int
 
 
-def split_data(X, y, test_ratio=0.1, val_ratio=0.1):
-    X_train, X_test, \
-    y_train, y_test, = train_test_split(X, y,
-                                        test_size=test_ratio,
-                                        stratify=y,
-                                        random_state=42)
-
+def split_data(X, y, val_ratio=0.1):
     X_train, X_val, \
-    y_train, y_val = train_test_split(X_train, y_train,
+    y_train, y_val = train_test_split(X, y,
                                       test_size=val_ratio,
-                                      stratify=y_train,
+                                      stratify=y,
                                       random_state=42)
     data_dict = {
         'train': (X_train, y_train),
         'validation': (X_val, y_val),
-        'test': (X_test, y_test)
     }
     return data_dict
 

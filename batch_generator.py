@@ -3,8 +3,9 @@ from dataset import TweetDataset
 
 
 class BatchGenerator:
-    def __init__(self, data_dict, **kwargs):
+    def __init__(self, data_dict, set_names, **kwargs):
         self.data_dict = data_dict
+        self.set_names = set_names
 
         self.batch_size = kwargs.get('batch_size', 16)
         self.num_works = kwargs.get('num_works', 4)
@@ -23,12 +24,12 @@ class BatchGenerator:
     def __create_data(self):
 
         im_dataset = {i: TweetDataset(input_data=self.data_dict[i])
-                      for i in ['test', 'train', 'validation']}
+                      for i in self.set_names}
 
         im_loader = {i: DataLoader(im_dataset[i],
                                    batch_size=self.batch_size,
                                    shuffle=self.shuffle,
                                    num_workers=self.num_works,
                                    drop_last=True)
-                     for i in ['test', 'train', 'validation']}
+                     for i in self.set_names}
         return im_dataset, im_loader

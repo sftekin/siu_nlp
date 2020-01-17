@@ -13,7 +13,7 @@ batch_params = {
 }
 
 train_params = {
-    'n_epoch': 50,
+    'n_epoch': 10,
     'clip': 5,
     'lr': 0.0001,
     'seq_len': 15,
