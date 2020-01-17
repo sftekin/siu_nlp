@@ -1,6 +1,8 @@
 from run_helper import read_sup_dataset, preprocess_set, split_data
 from batch_generator import BatchGenerator
-from config import batch_params
+from train import train
+from config import batch_params, train_params, model_config
+from models.sentiment_model import SentimentModel
 
 
 def main():
@@ -16,6 +18,10 @@ def main():
     data_dict = split_data(X, y, features)
 
     batch_gen = BatchGenerator(data_dict, **batch_params)
+
+    model = SentimentModel(model_config, int2word)
+
+    train(model, batch_gen, **train_params)
 
 
 if __name__ == '__main__':
