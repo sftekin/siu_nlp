@@ -40,11 +40,12 @@ def train(net, batch_gen, **kwargs):
 
             if (idx + 1) % kwargs['eval_every'] == 0:
                 print('\n')
-                val_loss = evaluate(net, batch_gen, **kwargs)
+                val_loss, acc = evaluate(net, batch_gen)
                 print("\nEpoch: {}/{}...".format(epoch + 1, kwargs['n_epoch']),
                       "Step: {}...".format(idx),
                       "Loss: {:.4f}...".format(running_loss / idx),
-                      "Val Loss: {:.4f}".format(val_loss))
+                      "Val Loss: {:.4f}".format(val_loss),
+                      'Val Acc: {:.4f}'.format(acc))
 
         train_loss_list.append(running_loss / idx)
         val_loss_list.append(val_loss)
@@ -66,6 +67,7 @@ def evaluate(net, batch_gen):
 
     val_losses = []
     hidden = net.init_hidden()
+    total_correct = 0
     for idx, (x, y, f) in enumerate(batch_gen.generate('validation')):
 
         print('\rval:{}'.format(idx), flush=True, end='')
@@ -79,5 +81,9 @@ def evaluate(net, batch_gen):
 
         val_losses.append(val_loss.item())
 
+        pred = torch.round(output)
+        total_correct += np.sum(pred.eq(y).numpy())
+
+    accuracy = total_correct / len(batch_gen.dataset_dict['validation'])
     net.train()
-    return np.mean(val_losses)
+    return np.mean(val_losses), accuracy
