@@ -14,11 +14,15 @@ class Preprocess:
     def __init__(self):
         self.tokenizer = TweetTokenizer()
 
-        # remove url, long-mention, mention, hash-tag
-        self.re_list = [r'http\S+', r'\(@ ?[^\s].+\)', r'@ ?[^\s]+', r'# ?[^\s]+']
+        # remove url, long-mention, mention, hash-tag, numbers
+        self.re_list = [r'http\S+', r'\(@ ?[^\s].+\)', r'@ ?[^\s]+', r'# ?[^\s]+', r'[0-9]+']
 
         # before tokenizing, remove non textual emoji
         self.rmv_emoji = lambda x: emoji.get_emoji_regexp().sub(r'', x)
+
+        # replace repetitive chars with only one char
+        self.re_repetitive = r'(.)\1{2,}'
+        self.rep_pattern = re.compile(r'(.)\1{2,}')
 
         # textual emoji
         self.pattern_happy_emoji = re.compile(r'([:;=] ?-?(\)|D+|d+|P))')
@@ -67,10 +71,19 @@ class Preprocess:
         # extract textual-emoji feature
         feature = self._extract_feature(sentence)
 
+        # replace repetitive chars
+        all_match = self.rep_pattern.findall(sentence)
+        for match in all_match:
+            sentence = re.sub(self.re_repetitive, match, sentence, count=1)
+
         # tokenize the sentence
         tokens = self.tokenizer.tokenize(sentence)
         for rmv_op in self.rmv_list:
             tokens = rmv_op(tokens)
+
+        # lower every word
+        tokens = [token.lower() for token in tokens]
+
         return tokens, feature
 
     def _extract_feature(self, sentence):

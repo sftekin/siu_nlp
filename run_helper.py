@@ -2,17 +2,17 @@ import os
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
-
+from preprocessing import Preprocess
 from sklearn.metrics import roc_curve, auc, f1_score
 
 
-def read_sup_dataset(path, pre_pro, load=True):
+def read_sup_dataset(path, load=True):
     save_path = os.path.join(path, 'tweet_20k.pkl')
     if os.path.isfile(save_path) and load:
         save_file = open(save_path, 'rb')
-        x, y, features = pickle.load(save_file)
+        x, y = pickle.load(save_file)
         print('tweet_20k.pkl loaded')
-        return (x, y), features
+        return x, y
     print('Reading supervised dataset')
     labels = ['positive', 'negative']
     x = []
@@ -24,11 +24,9 @@ def read_sup_dataset(path, pre_pro, load=True):
                 line = line.rstrip()
                 x.append(line)
                 y.append(labels.index(label))
-
-    (x, y), features = pre_pro.transform(x, y)
     save_file = open(save_path, 'wb')
-    pickle.dump((x, y, features), save_file)
-    return (x, y), features
+    pickle.dump((x, y), save_file)
+    return x, y
 
 
 def read_unsup_dataset(path, pre_pro, sample_size=1e5, load=True):
@@ -54,6 +52,30 @@ def read_unsup_dataset(path, pre_pro, sample_size=1e5, load=True):
     save_file = open(save_path, 'wb')
     pickle.dump(x, save_file)
     return x
+
+
+def preprocess_set(x, y, seq_len=15):
+    pre_pro = Preprocess()
+    (x, y), features = pre_pro.transform(x, y)
+
+    # crop long tweets
+    x = [twt for twt in x if len(twt) <= seq_len]
+
+    # pad x
+    pad_x = []
+    for twt in x:
+        if len(twt) < seq_len:
+            twt += ['<pad>']*(seq_len - len(twt))
+        pad_x.append(twt)
+    x = pad_x
+
+    # construct vocab
+    flat_x = [word for sentence in x for word in sentence]
+    words = tuple(set(flat_x))
+    int2word = dict(enumerate(words))
+    word2int = {word: ii for ii, word in int2word.items()}
+
+    return x, y, int2word, word2int
 
 
 def plot_roc_curve(confidence_fun, X_test, y_test, fig_name=''):
