@@ -13,8 +13,5 @@ dataset/twitter_100K/*
 embedding/*
 !embedding/.gitkeep
 
-models/*
-!models/.gitkeep
-
 results/*
 !results/.gitkeep

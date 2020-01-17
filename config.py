@@ -16,3 +16,9 @@ model_config = {
         'load': False
     }
 }
+
+batch_params = {
+    'batch_size': 16,
+    'num_works': 0,
+    'shuffle': True,
+}

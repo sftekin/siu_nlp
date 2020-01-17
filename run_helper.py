@@ -7,7 +7,6 @@ from sklearn.metrics import roc_curve, auc, f1_score
 from sklearn.model_selection import train_test_split
 
 
-
 def read_sup_dataset(path, load=True):
     save_path = os.path.join(path, 'tweet_20k.pkl')
     if os.path.isfile(save_path) and load:
@@ -93,14 +92,19 @@ def preprocess_set(x, y, seq_len=15):
 
 
 def split_data(X, y, features, test_ratio=0.1, val_ratio=0.1):
-    X_train, X_test, f_train, f_test, y_train, y_test = train_test_split(X, y, features,
-                                                                         test_size=test_ratio,
-                                                                         stratify=y,
-                                                                         random_state=42)
-    X_train, X_val, f_train, f_val, y_train, y_val = train_test_split(X_train, y_train, f_train,
-                                                                      test_size=val_ratio,
-                                                                      stratify=y,
-                                                                      random_state=42)
+    X_train, X_test, \
+    y_train, y_test, \
+    f_train, f_test = train_test_split(X, y, features,
+                                       test_size=test_ratio,
+                                       stratify=y,
+                                       random_state=42)
+
+    X_train, X_val, \
+    y_train, y_val, \
+    f_train, f_val = train_test_split(X_train, y_train, f_train,
+                                      test_size=val_ratio,
+                                      stratify=y_train,
+                                      random_state=42)
     data_dict = {
         'train': (X_train, y_train, f_train),
         'validation': (X_val, y_val, f_val),
