@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM pytorch/pytorch:1.0.1-cuda10.0-cudnn7-runtime
 
 RUN pip install scikit-learn==0.22
 RUN pip install gensim==3.8.1

@@ -11,7 +11,8 @@ tur_stopwords = set(stopwords.words('turkish'))
 
 
 class Preprocess:
-    def __init__(self):
+    def __init__(self, sequence_len):
+        self.sequence_len = sequence_len
         self.tokenizer = TweetTokenizer()
 
         # remove url, long-mention, mention, hash-tag, numbers
@@ -46,7 +47,7 @@ class Preprocess:
             labels = []
         for idx, sen in enumerate(X):
             tokens, feature = self._preprocess(sen)
-            if len(tokens) > 0:
+            if 0 < len(tokens) < self.sequence_len:
                 clean_data.append(tokens)
                 extracted_features.append(feature)
                 if y:
@@ -55,7 +56,7 @@ class Preprocess:
             return_val = clean_data, labels
         else:
             return_val = clean_data
-        extracted_features = np.array(extracted_features)
+        extracted_features = np.stack(extracted_features, axis=0)
         return return_val, extracted_features
 
     def _preprocess(self, sentence):

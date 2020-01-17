@@ -5,7 +5,7 @@ from gensim.models import KeyedVectors
 from sklearn.base import BaseEstimator, TransformerMixin
 
 
-class Embedding(BaseEstimator, TransformerMixin):
+class Word2Vec(BaseEstimator, TransformerMixin):
     def __init__(self, seq_len):
         self.seq_len = seq_len
 
@@ -44,11 +44,10 @@ class Embedding(BaseEstimator, TransformerMixin):
                 r = self.model.wv[x]
             elif x.lower() in self.model.wv:
                 r = self.model.wv[x.lower()]
+            elif x == '<pad>':
+                r = self.pad_vector
             else:
                 r = self.out_of_vocab_vector
             res.append(r)
-        if len(res) < self.seq_len:
-            for _ in range(self.seq_len - len(res)):
-                res.append(self.pad_vector)
         res = np.stack(res, axis=0)
         return res
