@@ -85,6 +85,8 @@ def preprocess_set(x, y, seq_len=15):
 
     # convert x to integers
     x = [[word2int[word] for word in twt] for twt in x]
+
+    # convert to numpy array
     x = np.array(x)
     y = np.array(y)
     return x, y, features, int2word, word2int
