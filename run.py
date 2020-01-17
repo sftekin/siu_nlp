@@ -1,4 +1,5 @@
 import numpy as np
+import pickle
 from run_helper import read_sup_dataset, preprocess_set, split_data
 from batch_generator import BatchGenerator
 from train import train
@@ -41,7 +42,8 @@ def main():
     train(model, batch_gen, **train_params)
 
     # test
-    X_test, y_test, _, _ = preprocess_set(X_test, y_test)
+    model_file = open('bilstm_model.pkl', 'rb')
+    model = pickle.load(model_file)
     data_dict = {'test': (X_test, y_test)}
     batch_gen = BatchGenerator(data_dict,
                                set_names=['test'],

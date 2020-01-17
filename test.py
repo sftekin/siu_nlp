@@ -24,5 +24,5 @@ def test(net, batch_gen):
         pred = torch.round(output)
         total_correct += np.sum(pred.eq(y).numpy())
 
-    accuracy = total_correct / len(batch_gen.dataset_dict['validation'])
+    accuracy = total_correct / len(batch_gen.dataset_dict['test'])
     return log_probs, accuracy
