@@ -12,7 +12,6 @@ class SentimentModel(nn.Module):
 
         self.hidden_dim = model_params.get('lstm_dim', 256)
         self.drop_prob = model_params.get('drop_prob', 0.5)
-        self.feature_dim = model_params.get('feature_dim', 2)
         self.batch_size = model_params.get('batch_size', 16)
         self.output_dim = model_params.get('output_dim', 1)
 
@@ -20,7 +19,7 @@ class SentimentModel(nn.Module):
         self.embed_dim = self.embed_layer.embed_dim
         self.vocab_dim = self.embed_layer.vocab_size
 
-        self.bilstm = nn.LSTM(input_size=self.embed_dim + self.feature_dim,
+        self.bilstm = nn.LSTM(input_size=self.embed_dim,
                               hidden_size=self.hidden_dim,
                               bidirectional=True,
                               batch_first=True)
@@ -30,14 +29,10 @@ class SentimentModel(nn.Module):
 
         self.sig = nn.Sigmoid()
 
-    def forward(self, X, feature, hidden):
-        b, s = X.shape
-        embed = self.embed_layer(X)
-        feature = feature.unsqueeze(1).expand(b, s, feature.shape[-1]).contiguous()
-
+    def forward(self, X, hidden):
+        embed = self.embed_layer(X).float()
         # concat embed vector and feature vec then feed to bi-lstm input
-        input_vec = torch.cat([embed, feature], dim=2).float()
-        lstm_out, hidden = self.bilstm(input_vec, hidden)
+        lstm_out, hidden = self.bilstm(embed, hidden)
 
         # take the last sequence output
         out = self.fc(self.dropout(lstm_out[:, -1]))

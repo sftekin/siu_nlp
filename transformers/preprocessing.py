@@ -25,10 +25,6 @@ class Preprocess:
         self.re_repetitive = r'(.)\1{2,}'
         self.rep_pattern = re.compile(r'(.)\1{2,}')
 
-        # textual emoji
-        self.pattern_happy_emoji = re.compile(r'([:;=] ?-?(\)|D+|d+|P))')
-        self.pattern_unhappy_emoji = re.compile(r'(: ?-?(\(|/|([Ss]))+)')
-
         # after tokenizing
         self.rmv_stop = lambda x: [w for w in x if w not in tur_stopwords]
         self.rmv_pun = lambda x: [w for w in x if w not in string.punctuation]
@@ -42,22 +38,19 @@ class Preprocess:
         :return:[[token , ..., token], ..., [token , ..., token]]
         """
         clean_data = []
-        extracted_features = []
         if y:
             labels = []
         for idx, sen in enumerate(X):
-            tokens, feature = self._preprocess(sen)
+            tokens = self._preprocess(sen)
             if 0 < len(tokens) < self.sequence_len:
                 clean_data.append(tokens)
-                extracted_features.append(feature)
                 if y:
                     labels.append(y[idx])
         if y:
             return_val = clean_data, labels
         else:
             return_val = clean_data
-        extracted_features = np.stack(extracted_features, axis=0)
-        return return_val, extracted_features
+        return return_val
 
     def _preprocess(self, sentence):
         """
@@ -68,9 +61,6 @@ class Preprocess:
         for re_op in self.re_list:
             sentence = re.sub(re_op, '', sentence)
         sentence = self.rmv_emoji(sentence)
-
-        # extract textual-emoji feature
-        feature = self._extract_feature(sentence)
 
         # replace repetitive chars
         all_match = self.rep_pattern.findall(sentence)
@@ -85,16 +75,4 @@ class Preprocess:
         # lower every word
         tokens = [token.lower() for token in tokens]
 
-        return tokens, feature
-
-    def _extract_feature(self, sentence):
-        emoji_flag = np.array([0, 0])
-
-        # search for happy emoji
-        emoji_flag[0] = len(self.pattern_happy_emoji.findall(sentence))
-
-        # search for unhappy emoji
-        emoji_flag[1] = len(self.pattern_unhappy_emoji.findall(sentence))
-        return emoji_flag
-
-
+        return tokens

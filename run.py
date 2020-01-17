@@ -6,16 +6,18 @@ from models.sentiment_model import SentimentModel
 
 
 def main():
+    tweet6k_path = 'dataset/twitter_6K'
     tweet20k_path = 'dataset/twitter_20K'
 
     # Supervised data
-    X, y = read_sup_dataset(tweet20k_path)
+    X_1, y_1 = read_sup_dataset(tweet20k_path)
+    X_2, y_2 = read_sup_dataset(tweet6k_path)
 
     # preprocess data
-    X, y, features, int2word, word2int = preprocess_set(X, y)
+    X, y, int2word, word2int = preprocess_set(X_1+X_2, y_1+y_2)
 
     # split data
-    data_dict = split_data(X, y, features)
+    data_dict = split_data(X, y)
 
     batch_gen = BatchGenerator(data_dict, **batch_params)
 

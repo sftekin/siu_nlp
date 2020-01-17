@@ -8,13 +8,14 @@ from sklearn.model_selection import train_test_split
 
 
 def read_sup_dataset(path, load=True):
-    save_path = os.path.join(path, 'tweet_20k.pkl')
+    pickle_name = path.split('/')[-1] + '.pkl'
+    save_path = os.path.join(path, pickle_name)
     if os.path.isfile(save_path) and load:
         save_file = open(save_path, 'rb')
         x, y = pickle.load(save_file)
-        print('tweet_20k.pkl loaded')
+        print('{} loaded'.format(pickle_name))
         return x, y
-    print('Reading supervised dataset')
+    print('Reading supervised dataset, {}'.format(pickle_name))
     labels = ['positive', 'negative']
     x = []
     y = []
@@ -57,7 +58,7 @@ def read_unsup_dataset(path, pre_pro, sample_size=1e5, load=True):
 
 def preprocess_set(x, y, seq_len=15):
     pre_pro = Preprocess(seq_len)
-    (x, y), features = pre_pro.transform(x, y)
+    x, y = pre_pro.transform(x, y)
 
     # pad x
     pad_x = []
@@ -88,27 +89,25 @@ def preprocess_set(x, y, seq_len=15):
     # convert to numpy array
     x = np.array(x)
     y = np.array(y)
-    return x, y, features, int2word, word2int
+    return x, y, int2word, word2int
 
 
-def split_data(X, y, features, test_ratio=0.1, val_ratio=0.1):
+def split_data(X, y, test_ratio=0.1, val_ratio=0.1):
     X_train, X_test, \
-    y_train, y_test, \
-    f_train, f_test = train_test_split(X, y, features,
-                                       test_size=test_ratio,
-                                       stratify=y,
-                                       random_state=42)
+    y_train, y_test, = train_test_split(X, y,
+                                        test_size=test_ratio,
+                                        stratify=y,
+                                        random_state=42)
 
     X_train, X_val, \
-    y_train, y_val, \
-    f_train, f_val = train_test_split(X_train, y_train, f_train,
+    y_train, y_val = train_test_split(X_train, y_train,
                                       test_size=val_ratio,
                                       stratify=y_train,
                                       random_state=42)
     data_dict = {
-        'train': (X_train, y_train, f_train),
-        'validation': (X_val, y_val, f_val),
-        'test': (X_test, y_test, f_test)
+        'train': (X_train, y_train),
+        'validation': (X_val, y_val),
+        'test': (X_test, y_test)
     }
     return data_dict
 

@@ -16,7 +16,7 @@ class Embedding(nn.Module):
 
     def forward(self, captions):
         vectors = self.embedding(captions)
-        return vectors.long()
+        return vectors
 
     def create_embed_tensor(self):
         transformer = Word2VecTransformer()
