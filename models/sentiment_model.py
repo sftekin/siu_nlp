@@ -12,7 +12,6 @@ class SentimentModel(nn.Module):
 
         self.hidden_dim = model_params.get('lstm_dim', 256)
         self.drop_prob = model_params.get('drop_prob', 0.5)
-        self.batch_size = model_params.get('batch_size', 16)
         self.output_dim = model_params.get('output_dim', 1)
 
         self.embed_layer = Embedding(int2word)
@@ -41,9 +40,9 @@ class SentimentModel(nn.Module):
 
         return sig_out, hidden
 
-    def init_hidden(self):
-        hidden = (Variable(torch.zeros(2, self.batch_size, self.hidden_dim).to(device)),
-                  Variable(torch.zeros(2, self.batch_size, self.hidden_dim).to(device)))
+    def init_hidden(self, batch_size):
+        hidden = (Variable(torch.zeros(2, batch_size, self.hidden_dim).to(device)),
+                  Variable(torch.zeros(2, batch_size, self.hidden_dim).to(device)))
         return hidden
 
     def repackage_hidden(self, h):

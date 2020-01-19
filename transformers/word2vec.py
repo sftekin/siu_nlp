@@ -2,10 +2,9 @@ import os
 import pickle
 import numpy as np
 from gensim.models import KeyedVectors
-from sklearn.base import BaseEstimator, TransformerMixin
 
 
-class Word2VecTransformer(BaseEstimator, TransformerMixin):
+class Word2VecTransformer:
     def __init__(self):
         self.model_path = 'embedding/word2vec.pkl'
         self.vector_path = 'embedding/word2vec.vec'
@@ -25,9 +24,6 @@ class Word2VecTransformer(BaseEstimator, TransformerMixin):
 
         self.out_of_vocab_vector = out_of_vocab_vector
         self.pad_vector = np.zeros((self.vector_size,))
-
-    def fit(self, *_):
-        return self
 
     def transform(self, x):
         if x in self.model.wv:

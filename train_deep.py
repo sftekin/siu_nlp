@@ -3,22 +3,25 @@ import pickle
 import numpy as np
 import torch.nn as nn
 import torch.optim as optim
+import matplotlib.pyplot as plt
+
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def train(net, batch_gen, **kwargs):
+def train_deep(net, batch_gen, **kwargs):
     net.train()
     net.to(device)
 
     opt = optim.Adam(net.parameters(), lr=kwargs['lr'])
+    batch_size = batch_gen.batch_size
     criterion = nn.BCELoss()
 
     train_loss_list = []
     val_loss_list = []
     for epoch in range(kwargs['n_epoch']):
         running_loss = 0
-        hidden = net.init_hidden()
+        hidden = net.init_hidden(batch_size)
         for idx, (x, y) in enumerate(batch_gen.generate('train')):
 
             print('\rtrain:{}'.format(idx), flush=True, end='')
@@ -59,14 +62,22 @@ def train(net, batch_gen, **kwargs):
     model_file = open('bilstm_model.pkl', 'wb')
     pickle.dump(net, model_file)
 
+    # plot losses
+    plt.figure()
+    plt.plot(range(kwargs['n_epoch']), train_loss_list, label='train')
+    plt.plot(range(kwargs['n_epoch']), val_loss_list, label='validation')
+    plt.legend()
+    plt.show()
+
 
 def evaluate(net, batch_gen):
     net.eval()
 
     criterion = nn.BCELoss()
+    batch_size = batch_gen.batch_size
 
     val_losses = []
-    hidden = net.init_hidden()
+    hidden = net.init_hidden(batch_size)
     total_correct = 0
     for idx, (x, y) in enumerate(batch_gen.generate('validation')):
 

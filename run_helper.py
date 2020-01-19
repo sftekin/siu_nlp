@@ -16,7 +16,7 @@ def read_sup_dataset(path, load=True):
         print('{} loaded'.format(pickle_name))
         return x, y
     print('Reading supervised dataset, {}'.format(pickle_name))
-    labels = ['positive', 'negative']
+    labels = ['negative', 'positive']
     x = []
     y = []
     for label in labels:
@@ -105,34 +105,21 @@ def split_data(X, y, val_ratio=0.1):
     return data_dict
 
 
-def plot_roc_curve(confidence_fun, X_test, y_test, fig_name=''):
+def plot_roc_curve(figure, y_test, y_score, fig_name=''):
     print('plotting roc curves')
-    save_path = os.path.join('results', fig_name + '.png')
-    y_test = np.array(y_test)
-    y_score = confidence_fun(X_test)
+    y_labels = np.array(y_test == 1, dtype=np.int)
+    fpr, tpr, threshold = roc_curve(y_labels, y_score)
+    roc_auc = auc(fpr, tpr)
 
-    fpr = {}
-    tpr = {}
-    thresholds = {}
-    roc_auc = {}
+    plt.figure(figure.number)
+    plt.plot(fpr, tpr, lw=2,
+             label='{} ROC curve (area = {:.2f})'.format(fig_name, roc_auc))
 
-    for idx, label in enumerate(['positive', 'negative', 'notr']):
-        y_labels = np.array(y_test == idx, dtype=np.int)
-        fpr[label], tpr[label], thresholds[label] = roc_curve(y_labels, y_score[:, idx])
-        roc_auc[label] = auc(fpr[label], tpr[label])
-
-    plt.figure()
-    for label in ['positive', 'negative', 'notr']:
-        plt.plot(fpr[label], tpr[label], lw=2,
-                 label='{} ROC curve (area = {:.2f})'.format(label, roc_auc[label]))
-
-        optimal_idx = np.argmax(tpr[label] - fpr[label])
-        thr_x, thr_y = fpr[label][optimal_idx], tpr[label][optimal_idx]
-        threshold = thresholds[label][optimal_idx]
-        plt.plot(thr_x, thr_y, 'mv', lw=2)
-        plt.text(thr_x, thr_y, s='{:.2f}'.format(threshold), ha='right', va='bottom', fontsize=10)
-        thresholds[label] = threshold  # store only the bests
-
+    optimal_idx = np.argmax(tpr - fpr)
+    thr_x, thr_y = fpr[optimal_idx], tpr[optimal_idx]
+    threshold = threshold[optimal_idx]
+    plt.plot(thr_x, thr_y, 'mv', lw=2)
+    plt.text(thr_x, thr_y, s='{:.2f}'.format(threshold), ha='right', va='bottom', fontsize=10)
     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
 
     plt.xlim([0.0, 1.0])
@@ -141,8 +128,6 @@ def plot_roc_curve(confidence_fun, X_test, y_test, fig_name=''):
     plt.ylabel('True Positive Rate')
     plt.title('Receiver operating characteristic example')
     plt.legend(loc="lower right")
-    plt.savefig(save_path)
-    return thresholds
 
 
 def self_label(confidence_fun, word2vec, data, threshold):

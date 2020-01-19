@@ -1,28 +1,26 @@
 import torch
-import numpy as np
-
+import pickle
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def test(net, batch_gen):
+def test(net, X_test, y_test):
     net.eval()
 
-    hidden = net.init_hidden()
-    total_correct = 0
+    hidden = net.init_hidden(1)
     log_probs = []
-    for idx, (x, y) in enumerate(batch_gen.generate('test')):
+    for idx, (x, y) in enumerate(zip(X_test, y_test)):
         print('\rtest:{}'.format(idx), flush=True, end='')
 
         hidden = net.repackage_hidden(hidden)
 
-        x, y = x.to(device), y.to(device)
+        x = torch.tensor(x).unsqueeze(0).to(device)
 
         output, hidden = net(x, hidden)
 
-        log_probs.append(output)
+        log_probs.append(output.item())
 
-        pred = torch.round(output)
-        total_correct += np.sum(pred.eq(y).numpy())
+    'dumping log_probs'
+    model_file = open('log_probs.pkl', 'wb')
+    pickle.dump(log_probs, model_file)
 
-    accuracy = total_correct / len(batch_gen.dataset_dict['test'])
-    return log_probs, accuracy
+    return log_probs
