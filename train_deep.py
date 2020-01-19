@@ -93,7 +93,7 @@ def evaluate(net, batch_gen):
         val_losses.append(val_loss.item())
 
         pred = torch.round(output)
-        total_correct += np.sum(pred.eq(y.float()).numpy())
+        total_correct += np.sum(pred.eq(y.float()).detach().to('cpu').numpy())
 
     accuracy = total_correct / len(batch_gen.dataset_dict['validation'])
     net.train()
