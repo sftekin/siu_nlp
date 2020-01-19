@@ -32,5 +32,5 @@ train_params = {
     'clip': 5,
     'lr': 0.00007,
     'seq_len': 15,
-    'eval_every': 500
+    'eval_every': 50
 }
