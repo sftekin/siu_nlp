@@ -46,7 +46,7 @@ def main():
         if model_name == 'LinearSVM':
             y_score = clf.decision_function(tf_embed_corpus(embed, X_test))
         else:
-            y_score = clf.predict_proba(tf_embed_corpus(embed, X_test))
+            y_score = clf.predict_proba(tf_embed_corpus(embed, X_test))[:, 1]
 
         pred = clf.predict(tf_embed_corpus(embed, X_test))
         acc = accuracy_score(y_test, pred)
