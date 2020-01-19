@@ -30,7 +30,7 @@ def main():
     X = np.concatenate((X_20k, X_6k), axis=0)
     y = np.concatenate((y_20k, y_6k), axis=0)
 
-    # split data
+    # split data to val and train
     data_dict = split_data(X, y)
 
     batch_gen = BatchGenerator(data_dict,
