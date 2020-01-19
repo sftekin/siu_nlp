@@ -18,21 +18,21 @@ def main():
     tweet20k_path = 'dataset/twitter_20K'
 
     # Supervised data
-    X_1, y_1 = read_sup_dataset(tweet20k_path)
+    # X_1, y_1 = read_sup_dataset(tweet20k_path)
     X_2, y_2 = read_sup_dataset(tweet6k_path)
 
     # preprocess data-
-    X, y, int2word, word2int = preprocess_set(X_1+X_2, y_1+y_2)
+    X, y, int2word, word2int = preprocess_set(X_2, y_2)
 
-    X_20k, y_20k = X[:len(X_1)], y[:len(y_1)]
-    X_6k, y_6k = X[len(X_1):], y[len(y_1):]
+    # X_20k, y_20k = X[:len(X_1)], y[:len(y_1)]
+    # X_6k, y_6k = X[len(X_1):], y[len(y_1):]
 
-    X_6k, X_test, y_6k, y_test = train_test_split(X_6k, y_6k,
-                                                  test_size=0.25,
-                                                  stratify=y_6k,
-                                                  random_state=42)
-    X = np.concatenate((X_20k, X_6k), axis=0)
-    y = np.concatenate((y_20k, y_6k), axis=0)
+    X, X_test, y, y_test = train_test_split(X, y,
+                                            test_size=0.25,
+                                            stratify=y,
+                                            random_state=42)
+    # X = np.concatenate((X_20k, X_6k), axis=0)
+    # y = np.concatenate((y_20k, y_6k), axis=0)
 
     # Train and test non deep models
     figure = plt.figure('roc')
