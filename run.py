@@ -32,9 +32,17 @@ def main():
     X_large = np.concatenate((X_20k, X_6k), axis=0)
     y_large = np.concatenate((y_20k, y_6k), axis=0)
 
-    figure = plt.figure('roc')
+    data_set = [[X_6k, y_6k], [X_large, y_large]]
 
-    for X, y in [[X_6k, y_6k], [X_large, y_large]]:
+    figure = plt.figure('roc')
+    for set_id, (X, y) in enumerate(data_set):
+        if set_id == 0:
+            fig_name = 'Kısıtlı veri kümesi'
+            train_params['eval_every'] = 30
+        else:
+            fig_name = 'Çoğaltılmış veri kümesi'
+            train_params['eval_every'] = 60
+
         print('Training for data length: {}'.format(len(y)))
         # split data
         data_dict = split_data(X, y)
@@ -51,7 +59,7 @@ def main():
 
         pred = [np.round(prob) for prob in log_prob]
 
-        plot_roc_curve(figure, y_test, log_prob, fig_name='Bi-LSTM')
+        plot_roc_curve(figure, y_test, log_prob, fig_name=fig_name)
 
         acc = accuracy_score(y_test, pred)
         f1 = f1_score(y_test, pred)
@@ -60,7 +68,7 @@ def main():
               'F1 score: {}'.format(acc, f1))
 
     plt.figure(figure.number)
-    plt.savefig('results/final_roc.png')
+    plt.savefig('results/final_roc.png', bbox_inches="tight", dpi=100)
     plt.show()
 
 

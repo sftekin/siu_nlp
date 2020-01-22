@@ -88,7 +88,7 @@ def plot_roc_curve(figure, y_test, y_score, fig_name=''):
 
     plt.figure(figure.number)
     plt.plot(fpr, tpr, lw=2,
-             label='{} ROC curve (area = {:.2f})'.format(fig_name, roc_auc))
+             label='{} AİK Eğrisi (alan = {:.2f})'.format(fig_name, roc_auc))
 
     optimal_idx = np.argmax(tpr - fpr)
     thr_x, thr_y = fpr[optimal_idx], tpr[optimal_idx]
@@ -99,7 +99,8 @@ def plot_roc_curve(figure, y_test, y_score, fig_name=''):
 
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.0])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('Receiver operating characteristic')
+    plt.xlabel('Yanlış Pozitif Sıklığı')
+    plt.ylabel('Doğru Pozitif Sıklığı')
+    plt.title('Alışı İşletim Karakteristik Eğrisi')
+    plt.grid(True)
     plt.legend(loc="lower right")

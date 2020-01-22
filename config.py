@@ -2,7 +2,7 @@ model_config = {
     'LSTM': {
         'n_layers': 1,
         'lstm_dim': 256,
-        'drop_prob': 0.5,
+        'drop_prob': 0.3,
         'output_dim': 1,
     }
 }
