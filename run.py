@@ -40,10 +40,12 @@ def main():
             fig_name = 'Kısıtlı veri kümesi'
             train_params['eval_every'] = 30
             ha = 'left'
+            va = 'top'
         else:
             fig_name = 'Çoğaltılmış veri kümesi'
             train_params['eval_every'] = 200
             ha = 'right'
+            va = 'bottom'
 
         print('Training for data length: {}'.format(len(y)))
         # split data
@@ -61,7 +63,7 @@ def main():
 
         pred = [np.round(prob) for prob in log_prob]
 
-        plot_roc_curve(figure, y_test, log_prob, fig_name=fig_name, ha=ha)
+        plot_roc_curve(figure, y_test, log_prob, fig_name=fig_name, ha=ha, va=va)
 
         acc = accuracy_score(y_test, pred)
         f1 = f1_score(y_test, pred)

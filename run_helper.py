@@ -80,7 +80,7 @@ def split_data(X, y, val_ratio=0.1):
     return data_dict
 
 
-def plot_roc_curve(figure, y_test, y_score, fig_name='', ha='right'):
+def plot_roc_curve(figure, y_test, y_score, fig_name='', ha='right', va='bottom'):
     print('plotting roc curves')
     y_labels = np.array(y_test == 1, dtype=np.int)
     fpr, tpr, threshold = roc_curve(y_labels, y_score)
