@@ -31,31 +31,6 @@ def read_sup_dataset(path, load=True):
     return x, y
 
 
-def read_unsup_dataset(path, pre_pro, sample_size=1e5, load=True):
-    save_path = os.path.join(path, 'tweet_100k.pkl')
-    if os.path.isfile(save_path) and load:
-        save_file = open(save_path, 'rb')
-        x = pickle.load(save_file)
-        print('tweet_100k.pkl loaded')
-        return x
-
-    print('Reading UNsupervised dataset')
-    x = []
-    data_path = os.path.join(path, 'tweets.txt')
-    with open(data_path, 'r', encoding='utf-8') as f:
-        for line in f.readlines():
-            line = line.rstrip()
-            x.append(line)
-    x = np.array(x)
-    x = x[np.random.permutation(len(x))]
-    x = x[:int(sample_size)].tolist()
-
-    x = pre_pro.transform(x)
-    save_file = open(save_path, 'wb')
-    pickle.dump(x, save_file)
-    return x
-
-
 def preprocess_set(x, y, seq_len=15):
     pre_pro = Preprocess(seq_len)
     x, y = pre_pro.transform(x, y)
@@ -126,31 +101,5 @@ def plot_roc_curve(figure, y_test, y_score, fig_name=''):
     plt.ylim([0.0, 1.0])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title('Receiver operating characteristic example')
+    plt.title('Receiver operating characteristic')
     plt.legend(loc="lower right")
-
-
-def self_label(confidence_fun, word2vec, data, threshold):
-    x = []
-    y = []
-    # labels = ['positive', 'negative', 'notr']
-    y_scores = confidence_fun(word2vec.transform(data))
-    pred_class = np.argmax(y_scores, axis=1)
-
-    for data_idx, (score, pred) in enumerate(zip(y_scores, pred_class)):
-        # thr = thresholds[labels[pred]]
-        if score[pred] > threshold:
-            x.append(data[data_idx])
-            y.append(pred)
-    print(len(x))
-    return x, y
-
-
-def compare_models(models, X_test, y_test, model_names):
-    for idx, model_name in enumerate(model_names):
-        y_pred = models[idx].predict(X_test, y_test)
-        macro = f1_score(y_test, y_pred, average='macro')
-        micro = f1_score(y_test, y_pred, average='micro')
-        weighted = f1_score(y_test, y_pred, average='weighted')
-        print('{} --> f1_macro: {}, '
-              'f1_micro: {}, f1_weighted: {}'.format(model_name, macro, micro, weighted))

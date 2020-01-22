@@ -1,18 +1,4 @@
 model_config = {
-    'LinearSVM': {
-        'c_list': [1],
-        'tol': [1e-4],
-        'cv': 3,
-        'scoring': 'f1_micro',
-        'load': False
-    },
-    'RandomForest': {
-        'n_estimator': [3000],
-        'max_depth': [1000],
-        'cv': 3,
-        'scoring': 'f1_micro',
-        'load': False
-    },
     'LSTM': {
         'n_layers': 1,
         'lstm_dim': 256,
@@ -22,7 +8,7 @@ model_config = {
 }
 
 batch_params = {
-    'batch_size': 32,
+    'batch_size': 64,
     'num_works': 0,
     'shuffle': True,
 }

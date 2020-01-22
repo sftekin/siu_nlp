@@ -19,7 +19,7 @@ def test(net, X_test, y_test):
 
         log_probs.append(output.item())
 
-    'dumping log_probs'
+    print('dumping log_probs')
     model_file = open('log_probs.pkl', 'wb')
     pickle.dump(log_probs, model_file)
 
