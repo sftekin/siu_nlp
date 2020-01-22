@@ -80,7 +80,7 @@ def split_data(X, y, val_ratio=0.1):
     return data_dict
 
 
-def plot_roc_curve(figure, y_test, y_score, fig_name=''):
+def plot_roc_curve(figure, y_test, y_score, fig_name='', ha='right'):
     print('plotting roc curves')
     y_labels = np.array(y_test == 1, dtype=np.int)
     fpr, tpr, threshold = roc_curve(y_labels, y_score)
@@ -94,13 +94,13 @@ def plot_roc_curve(figure, y_test, y_score, fig_name=''):
     thr_x, thr_y = fpr[optimal_idx], tpr[optimal_idx]
     threshold = threshold[optimal_idx]
     plt.plot(thr_x, thr_y, 'mv', lw=2)
-    plt.text(thr_x, thr_y, s='{:.2f}'.format(threshold), ha='right', va='bottom', fontsize=10)
+    plt.text(thr_x, thr_y, s='{:.2f}'.format(threshold), ha=ha, va='bottom', fontsize=10)
     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
 
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.0])
     plt.xlabel('Yanlış Pozitif Sıklığı')
     plt.ylabel('Doğru Pozitif Sıklığı')
-    plt.title('Alışı İşletim Karakteristik Eğrisi')
+    plt.title('Alıcı İşletim Karakteristik Eğrisi')
     plt.grid(True)
     plt.legend(loc="lower right")
