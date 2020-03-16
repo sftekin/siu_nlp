@@ -1,69 +1,100 @@
-import os
+import torch
 import pickle
-import itertools
-
-from sklearn.model_selection import cross_val_score
-from sklearn.svm import LinearSVC
-from sklearn.ensemble import RandomForestClassifier
-
-
-def train_model(data, word2vec, **params):
-    # Check pre-trained model
-    model_path = os.path.join('models', params['model_name']+'.pkl')
-    if os.path.isfile(model_path) and params['load']:
-        model_file = open(model_path, 'rb')
-        model = pickle.load(model_file)
-        print('model {} found and loaded'.format(params['model_name']))
-        return model
-
-    print('model {} is training...'.format(params['model_name']))
-    X_train, X_test, y_train, y_test = data
-
-    word_embeds = word2vec.transform(X_train)
-
-    if params['model_name'] == 'linear_svm':
-        model_params = [params['c_list'], params['tol']]
-    else:
-        model_params = [params['n_estimator'], params['max_depth']]
-
-    best_score = 0
-    best_params = []
-    for p1, p2 in itertools.product(*model_params):
-        if params['model_name'] == 'linear_svm':
-            clf = LinearSVC(C=p1, tol=p2, multi_class='ovr',
-                            max_iter=2000, dual=False)
-        else:
-            clf = RandomForestClassifier(n_estimators=p1, max_depth=p2)
-
-        cv_score = cross_val_score(clf, word_embeds, y_train,
-                                   cv=params['cv'], scoring=params['scoring'])
-        print('first_param:{}, '
-              'second_param:{}, '
-              'cv_score:{}'.format(p1, p2, cv_score))
-
-        cv_score = sum(cv_score) / params['cv']
-        if best_score < cv_score:
-            best_score = cv_score
-            best_params = [p1, p2]
-
-    print('Training finished best params = '
-          'first_param:{}, second_param:{}'.format(*best_params))
-
-    if params['model_name'] == 'linear_svm':
-        clf = LinearSVC(C=best_params[0], tol=best_params[1],
-                        multi_class='ovr', max_iter=5000, dual=False)
-    else:
-        clf = RandomForestClassifier(n_estimators=best_params[0],
-                                     max_depth=best_params[1],
-                                     n_jobs=-1)
-
-    clf.fit(word_embeds, y_train)
-    print("Best parameter Score "
-          "(CV f1_micro_score=%0.3f):" % clf.score(word2vec.transform(X_test),
-                                                   y_test))
-    print('Saving the model')
-    model_file = open(model_path, 'wb')
-    pickle.dump(clf, model_file)
-    return clf
+import numpy as np
+import torch.nn as nn
+import torch.optim as optim
+import matplotlib.pyplot as plt
 
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+
+def train_deep(net, batch_gen, **kwargs):
+    net.train()
+    net.to(device)
+
+    opt = optim.Adam(net.parameters(), lr=kwargs['lr'])
+    batch_size = batch_gen.batch_size
+    criterion = nn.BCELoss()
+
+    train_loss_list = []
+    val_loss_list = []
+    for epoch in range(kwargs['n_epoch']):
+        running_loss = 0
+        hidden = net.init_hidden(batch_size)
+        for idx, (x, y) in enumerate(batch_gen.generate('train')):
+
+            print('\rtrain:{}'.format(idx), flush=True, end='')
+
+            hidden = net.repackage_hidden(hidden)
+
+            x, y = x.to(device), y.to(device)
+
+            opt.zero_grad()
+            output, hidden = net(x, hidden)
+
+            loss = criterion(output, y.float())
+            loss.backward()
+
+            nn.utils.clip_grad_norm_(net.parameters(), kwargs['clip'])
+            opt.step()
+
+            running_loss += loss.item()
+
+            if (idx + 1) % kwargs['eval_every'] == 0:
+                print('\n')
+                val_loss, acc = evaluate(net, batch_gen)
+                print("\nEpoch: {}/{}...".format(epoch + 1, kwargs['n_epoch']),
+                      "Step: {}...".format(idx),
+                      "Loss: {:.4f}...".format(running_loss / idx),
+                      "Val Loss: {:.4f}".format(val_loss),
+                      'Val Acc: {:.4f}'.format(acc))
+
+        train_loss_list.append(running_loss / idx)
+        val_loss_list.append(val_loss)
+
+        loss_file = open('losses.pkl', 'wb')
+        model_file = open('bilstm_model.pkl', 'wb')
+        pickle.dump([train_loss_list, val_loss_list], loss_file)
+        pickle.dump(net, model_file)
+
+    print('Training finished, saving the model')
+    model_file = open('bilstm_model.pkl', 'wb')
+    pickle.dump(net, model_file)
+
+    # plot losses
+    plt.figure()
+    plt.plot(range(kwargs['n_epoch']), train_loss_list, label='train')
+    plt.plot(range(kwargs['n_epoch']), val_loss_list, label='validation')
+    plt.legend()
+    plt.show()
+
+
+def evaluate(net, batch_gen):
+    net.eval()
+
+    criterion = nn.BCELoss()
+    batch_size = batch_gen.batch_size
+
+    val_losses = []
+    hidden = net.init_hidden(batch_size)
+    total_correct = 0
+    for idx, (x, y) in enumerate(batch_gen.generate('validation')):
+
+        print('\rval:{}'.format(idx), flush=True, end='')
+
+        hidden = net.repackage_hidden(hidden)
+
+        x, y = x.to(device), y.to(device)
+
+        output, hidden = net(x, hidden)
+        val_loss = criterion(output, y.float())
+
+        val_losses.append(val_loss.item())
+
+        pred = torch.round(output)
+        total_correct += np.sum(pred.eq(y.float()).detach().to('cpu').numpy())
+
+    accuracy = total_correct / len(batch_gen.dataset_dict['validation'])
+    net.train()
+    return np.mean(val_losses), accuracy

@@ -2,10 +2,9 @@ import os
 import pickle
 import numpy as np
 from gensim.models import KeyedVectors
-from sklearn.base import BaseEstimator, TransformerMixin
 
 
-class MeanEmbedding(BaseEstimator, TransformerMixin):
+class Word2VecTransformer:
     def __init__(self):
         self.model_path = 'embedding/word2vec.pkl'
         self.vector_path = 'embedding/word2vec.vec'
@@ -24,33 +23,15 @@ class MeanEmbedding(BaseEstimator, TransformerMixin):
         out_of_vocab_vector = out_of_vocab_vector - np.linalg.norm(out_of_vocab_vector)
 
         self.out_of_vocab_vector = out_of_vocab_vector
+        self.pad_vector = np.zeros((self.vector_size,))
 
-    def fit(self, *_):
-        return self
-
-    def transform(self, X):
-        data = []
-        for sen in X:
-            data.append(self._vec2sen(sen))
-        return np.stack(data, axis=0)
-
-    def _vec2sen(self, X):
-        res = np.zeros(self.vector_size)
-        for x in X:
-            if x in self.model.wv:
-                r = self.model.wv[x]
-            elif x.lower() in self.model.wv:
-                r = self.model.wv[x.lower()]
-            else:
-                r = self.out_of_vocab_vector
-            res += r
-        return res / len(X)
-
-
-if __name__ == '__main__':
-
-    tokens = 'bir kac kisi geldi sadece'.split()
-    word2vec = MeanEmbedding()
-
-    vectors = word2vec.fit_transform(tokens)
-    print(vectors)
+    def transform(self, x):
+        if x in self.model.wv:
+            r = self.model.wv[x]
+        elif x.lower() in self.model.wv:
+            r = self.model.wv[x.lower()]
+        elif x == '<pad>':
+            r = self.pad_vector
+        else:
+            r = self.out_of_vocab_vector
+        return r
